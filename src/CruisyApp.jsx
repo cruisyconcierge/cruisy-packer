@@ -5,53 +5,72 @@ import {
   X, Plus, ArrowRight, Smile, User, Map, Compass, Watch, Smartphone,
   Umbrella, Coffee, Plane, Mountain, Snowflake, Utensils,
   Star, Heart, Cloud, Music, Tent, Trees, Building, Download, Share2, Type,
-  Maximize2, Facebook, Mail, Twitter
+  Maximize2, Facebook, Mail, Twitter, Image as ImageIcon
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
-// REPLACE THIS with your actual Amazon Associate Tag
 const AMAZON_TAG = 'cruisytravel-20'; 
 
 // --- CONFIGURATION ---
 const THEMES = {
   'Cruise': {
-    bg: 'bg-gradient-to-br from-blue-100 via-white to-teal-50',
-    accent: 'bg-teal-500',
+    bg: 'bg-blue-50',
     text: 'text-teal-900',
-    border: 'border-8 border-teal-200 border-double',
-    icon: <Anchor size={20}/>,
+    // Graphic: Anchor & Waves
+    decoration: (
+      <>
+        <div className="absolute top-0 right-0 p-4 opacity-10 text-teal-800"><Anchor size={120} /></div>
+        <div className="absolute bottom-0 left-0 w-full h-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+      </>
+    ),
     vibes: 'Tropical Beach'
   },
   'Tropical': {
-    bg: 'bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50',
-    accent: 'bg-orange-400',
+    bg: 'bg-orange-50',
     text: 'text-orange-900',
-    border: 'border-[12px] border-orange-200 border-dashed',
-    icon: <Sun size={20}/>,
+    // Graphic: Sun & Palm feel
+    decoration: (
+      <>
+        <div className="absolute -top-10 -right-10 text-yellow-400 opacity-20"><Sun size={200} /></div>
+        <div className="absolute bottom-4 right-4 text-orange-300 opacity-20"><Umbrella size={100} /></div>
+      </>
+    ),
     vibes: 'Tropical Beach'
   },
   'Ski Trip': {
-    bg: 'bg-gradient-to-b from-blue-50 to-white',
-    accent: 'bg-blue-600',
-    text: 'text-blue-900',
-    border: 'border-8 border-blue-100 rounded-none',
-    icon: <Snowflake size={20}/>,
+    bg: 'bg-slate-100',
+    text: 'text-slate-800',
+    // Graphic: Snowflakes
+    decoration: (
+      <>
+        <div className="absolute top-4 left-4 text-blue-200 opacity-40"><Snowflake size={80} /></div>
+        <div className="absolute bottom-8 right-8 text-blue-300 opacity-30"><Snowflake size={120} /></div>
+      </>
+    ),
     vibes: 'Cold Adventure'
   },
   'City Break': {
-    bg: 'bg-gradient-to-br from-gray-100 to-gray-200',
-    accent: 'bg-purple-600',
+    bg: 'bg-gray-100',
     text: 'text-gray-900',
-    border: 'border-8 border-gray-800',
-    icon: <Building size={20}/>,
+    // Graphic: Buildings / Map
+    decoration: (
+      <>
+        <div className="absolute bottom-0 w-full h-32 opacity-10 pointer-events-none bg-gradient-to-t from-gray-400 to-transparent"></div>
+        <div className="absolute top-4 right-4 text-gray-300"><Building size={100} /></div>
+      </>
+    ),
     vibes: 'City Exploring'
   },
   'Desert': {
-    bg: 'bg-gradient-to-tr from-amber-100 to-orange-100',
-    accent: 'bg-amber-600',
+    bg: 'bg-amber-50',
     text: 'text-amber-900',
-    border: 'border-[10px] border-amber-300 border-dotted',
-    icon: <Tent size={20}/>,
+    // Graphic: Sun & Dunes
+    decoration: (
+      <>
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-200 to-transparent"></div>
+        <div className="absolute bottom-4 left-4 text-amber-300 opacity-40"><Sun size={80} /></div>
+      </>
+    ),
     vibes: 'Airport Comfort'
   }
 };
@@ -71,39 +90,48 @@ const STICKERS = [
   { id: 's12', content: 'Vacay Mode', type: 'text' },
 ];
 
+const SCENIC_PHOTOS = [
+  { id: 'p1', url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=400&q=80', name: 'Swiss Alps' },
+  { id: 'p2', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80', name: 'Tropical Beach' },
+  { id: 'p3', url: 'https://images.unsplash.com/photo-1499856871940-a09627c6dcf6?auto=format&fit=crop&w=400&q=80', name: 'Map & Camera' },
+  { id: 'p4', url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=80', name: 'Blue Lake' },
+  { id: 'p5', url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80', name: 'Desert Road' },
+  { id: 'p6', url: 'https://images.unsplash.com/photo-1504198458649-3128b932f49e?auto=format&fit=crop&w=400&q=80', name: 'Cozy Cabin' },
+];
+
 const TRAVEL_VIBES = {
   'Airport Comfort': [
-    { id: 'v_air_1', name: 'Travel Hoodie', price: 45.00, category: 'Top', icon: <Shirt size={24}/> },
-    { id: 'v_air_2', name: 'Compression Socks', price: 18.00, category: 'Accessory', icon: <Anchor size={24}/> },
-    { id: 'v_air_3', name: 'Slip-on Sneakers', price: 60.00, category: 'Shoes', icon: <ArrowRight size={24}/> },
-    { id: 'v_air_4', name: 'Neck Pillow', price: 25.00, category: 'Gear', icon: <User size={24}/> },
+    { id: 'v_air_1', name: 'Travel Hoodie', price: 45.00, img: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_air_2', name: 'Compression Socks', price: 18.00, img: 'https://images.unsplash.com/photo-1582966772652-13b355bb9797?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_air_3', name: 'Slip-on Sneakers', price: 60.00, img: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_air_4', name: 'Neck Pillow', price: 25.00, img: 'https://plus.unsplash.com/premium_photo-1675807914389-72c67dc39d42?auto=format&fit=crop&w=300&q=80' },
   ],
   'Tropical Beach': [
-    { id: 'v_beach_1', name: 'Linen Cover-up', price: 35.00, category: 'Top', icon: <Sun size={24}/> },
-    { id: 'v_beach_2', name: 'Quick-Dry Swimwear', price: 28.00, category: 'Swim', icon: <Umbrella size={24}/> },
-    { id: 'v_beach_3', name: 'Waterproof Sandals', price: 30.00, category: 'Shoes', icon: <Anchor size={24}/> },
-    { id: 'v_beach_4', name: 'Polarized Shades', price: 15.99, category: 'Accessory', icon: <Sun size={24}/> },
+    { id: 'v_beach_1', name: 'Linen Cover-up', price: 35.00, img: 'https://images.unsplash.com/photo-1569388330292-7a6a84165c6c?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_beach_2', name: 'Quick-Dry Swimwear', price: 28.00, img: 'https://images.unsplash.com/photo-1566807810030-31cb3b27ea17?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_beach_3', name: 'Waterproof Sandals', price: 30.00, img: 'https://images.unsplash.com/photo-1603487742131-4160d6986ba2?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_beach_4', name: 'Polarized Shades', price: 15.99, img: 'https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=300&q=80' },
   ],
   'City Exploring': [
-    { id: 'v_city_1', name: 'Anti-Theft Bag', price: 40.00, category: 'Gear', icon: <ShoppingBag size={24}/> },
-    { id: 'v_city_2', name: 'Walking Shoes', price: 85.00, category: 'Shoes', icon: <ArrowRight size={24}/> },
-    { id: 'v_city_3', name: 'Rain Jacket', price: 55.00, category: 'Outerwear', icon: <Umbrella size={24}/> },
-    { id: 'v_city_4', name: 'Power Bank', price: 29.99, category: 'Tech', icon: <Smartphone size={24}/> },
+    { id: 'v_city_1', name: 'Anti-Theft Bag', price: 40.00, img: 'https://images.unsplash.com/photo-1590874103328-3607bac568a5?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_city_2', name: 'Walking Shoes', price: 85.00, img: 'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_city_3', name: 'Rain Jacket', price: 55.00, img: 'https://images.unsplash.com/photo-1545593169-3d23b207eb87?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_city_4', name: 'Power Bank', price: 29.99, img: 'https://images.unsplash.com/photo-1609592424367-172579dfd97d?auto=format&fit=crop&w=300&q=80' },
   ],
   'Cold Adventure': [
-    { id: 'v_cold_1', name: 'Thermal Layer', price: 40.00, category: 'Layer', icon: <Snowflake size={24}/> },
-    { id: 'v_cold_2', name: 'Wool Beanie', price: 22.00, category: 'Accessory', icon: <Sun size={24}/> },
-    { id: 'v_cold_3', name: 'Puffer Jacket', price: 90.00, category: 'Outerwear', icon: <Mountain size={24}/> },
+    { id: 'v_cold_1', name: 'Thermal Layer', price: 40.00, img: 'https://images.unsplash.com/photo-1578589318274-0498eb107e36?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_cold_2', name: 'Wool Beanie', price: 22.00, img: 'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_cold_3', name: 'Puffer Jacket', price: 90.00, img: 'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=300&q=80' },
   ]
 };
 
 const ESSENTIALS_DATA = [
-  { id: 'e1', name: 'Univ. Adapter', price: 19.99, category: 'Tech', icon: <Smartphone size={20}/> },
-  { id: 'e2', name: 'Power Bank', price: 29.99, category: 'Tech', icon: <Watch size={20}/> },
-  { id: 'e3', name: 'Packing Cubes', price: 24.99, category: 'Gear', icon: <Luggage size={20}/> },
-  { id: 'e4', name: 'Waterproof Pouch', price: 9.99, category: 'Gear', icon: <Umbrella size={20}/> },
-  { id: 'e6', name: 'Sunscreen', price: 14.50, category: 'Toiletries', icon: <Sun size={20}/> },
-  { id: 'e7', name: 'First Aid Kit', price: 15.00, category: 'Health', icon: <Plus size={20}/> },
+  { id: 'e1', name: 'Univ. Adapter', price: 19.99, img: 'https://images.unsplash.com/photo-1590248232938-1630b427b34e?auto=format&fit=crop&w=300&q=80' },
+  { id: 'e2', name: 'Power Bank', price: 29.99, img: 'https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?auto=format&fit=crop&w=300&q=80' },
+  { id: 'e3', name: 'Packing Cubes', price: 24.99, img: 'https://images.unsplash.com/photo-1565538420183-f39c27937397?auto=format&fit=crop&w=300&q=80' },
+  { id: 'e4', name: 'Waterproof Pouch', price: 9.99, img: 'https://images.unsplash.com/photo-1623998021450-85c29c644e0d?auto=format&fit=crop&w=300&q=80' },
+  { id: 'e6', name: 'Sunscreen', price: 14.50, img: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=300&q=80' },
+  { id: 'e7', name: 'First Aid Kit', price: 15.00, img: 'https://images.unsplash.com/photo-1632613713312-0440375dc113?auto=format&fit=crop&w=300&q=80' },
 ];
 // --- COMPONENTS ---
 
@@ -163,36 +191,18 @@ const Hero = ({ setView }) => (
         </button>
       </div>
 
-      {/* INSPIRATION SLIDESHOW */}
+      {/* INSPIRATION SLIDESHOW - Static for now */}
       <div className="border-t border-gray-100 pt-12">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
         <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
-           {/* Mock Board 1 */}
-           <div className="w-48 h-64 bg-orange-50 rounded-xl border-4 border-orange-200 border-dashed p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
-              <div className="text-center mb-2"><span className="text-orange-800 font-header text-sm">Tropical</span></div>
-              <div className="grid grid-cols-2 gap-2">
-                 <div className="bg-white h-12 rounded-lg"></div>
-                 <div className="bg-white h-12 rounded-lg"></div>
-                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
-              </div>
+           <div className="w-48 h-64 bg-orange-50 rounded-xl border-4 border-orange-100 p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
+              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
-           {/* Mock Board 2 */}
-           <div className="w-48 h-64 bg-blue-50 rounded-xl border-4 border-blue-200 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
-              <div className="text-center mb-2"><span className="text-blue-800 font-header text-sm">Ski Trip</span></div>
-              <div className="grid grid-cols-2 gap-2">
-                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
-                 <div className="bg-white h-12 rounded-lg"></div>
-                 <div className="bg-white h-12 rounded-lg"></div>
-              </div>
+           <div className="w-48 h-64 bg-blue-50 rounded-xl border-4 border-blue-100 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
+              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
-           {/* Mock Board 3 */}
-           <div className="w-48 h-64 bg-gray-100 rounded-xl border-4 border-gray-300 border-dotted p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
-              <div className="text-center mb-2"><span className="text-gray-800 font-header text-sm">City Break</span></div>
-              <div className="grid grid-cols-2 gap-2">
-                 <div className="bg-white h-12 rounded-lg"></div>
-                 <div className="bg-white h-12 rounded-lg"></div>
-                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
-              </div>
+           <div className="w-48 h-64 bg-gray-100 rounded-xl border-4 border-gray-200 p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
+              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1499856871940-a09627c6dcf6?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
         </div>
       </div>
@@ -215,10 +225,10 @@ const StyleBoard = ({ addToBag }) => {
 
   const removeFromBoard = (boardId) => setBoardItems(boardItems.filter(i => i.boardId !== boardId));
 
-  // Toggle size: Small -> Medium -> Large -> Small
   const toggleSize = (boardId) => {
     setBoardItems(boardItems.map(item => {
       if (item.boardId === boardId) {
+        // Simple resize logic: span 1 col -> span 2 cols -> span 2x2
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
         return { ...item, size: nextSize };
       }
@@ -226,17 +236,12 @@ const StyleBoard = ({ addToBag }) => {
     }));
   };
 
-  // Generic Share Handler
   const handleShare = (platform) => {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent("Check out my Cruisy Trip Kit! ✈️");
-    let shareUrl = "";
-
-    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-    if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-    if (platform === 'mail') shareUrl = `mailto:?subject=My Packing Board&body=${text} ${url}`;
-    
-    if (shareUrl) window.open(shareUrl, '_blank');
+    if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    if (platform === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    if (platform === 'mail') window.open(`mailto:?subject=My Packing Board&body=${text} ${url}`, '_blank');
   };
 
   return (
@@ -246,6 +251,7 @@ const StyleBoard = ({ addToBag }) => {
           
           {/* LEFT: TOOLS */}
           <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
+             {/* THEME */}
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <h3 className="font-header text-lg text-gray-800 mb-4">1. Choose Theme</h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -257,22 +263,38 @@ const StyleBoard = ({ addToBag }) => {
                 </div>
              </div>
 
+             {/* PALETTE */}
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-[600px] flex flex-col">
                 <h3 className="font-header text-lg text-gray-800 mb-4">2. Add Items</h3>
-                <div className="flex border-b border-gray-100 mb-4">
-                  {['Vibes', 'Essentials', 'Stickers'].map(tab => (
-                    <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeTab === tab ? 'text-brand border-b-2 border-brand' : 'text-gray-400 hover:text-gray-600'}`}>{tab}</button>
+                <div className="flex border-b border-gray-100 mb-4 overflow-x-auto">
+                  {['Vibes', 'Essentials', 'Photos', 'Stickers'].map(tab => (
+                    <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 pb-3 px-2 text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab ? 'text-brand border-b-2 border-brand' : 'text-gray-400 hover:text-gray-600'}`}>{tab}</button>
                   ))}
                 </div>
+                
                 <div className="overflow-y-auto flex-1 pr-2 space-y-3 custom-scroll">
-                   {/* CONTENT TABS */}
+                   {/* PRODUCTS (Vibes/Essentials) */}
                    {(activeTab === 'Vibes' ? vibeItems : activeTab === 'Essentials' ? ESSENTIALS_DATA : []).map(item => (
                      <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
-                        <div className="bg-gray-100 p-3 rounded-lg text-gray-500 group-hover:text-brand mr-3">{item.icon}</div>
+                        <img src={item.img} alt={item.name} className="w-12 h-12 rounded-lg object-cover mr-3 shadow-sm" />
                         <div className="flex-1"><p className="font-bold text-sm text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
                         <Plus size={18} className="text-gray-300 group-hover:text-brand"/>
                      </div>
                    ))}
+                   
+                   {/* PHOTOS */}
+                   {activeTab === 'Photos' && (
+                     <div className="grid grid-cols-2 gap-3">
+                        {SCENIC_PHOTOS.map(p => (
+                          <div key={p.id} onClick={() => addToBoard({name: p.name, img: p.url}, 'photo')} className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group hover:opacity-90">
+                             <img src={p.url} className="w-full h-full object-cover" />
+                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                          </div>
+                        ))}
+                     </div>
+                   )}
+
+                   {/* STICKERS */}
                    {activeTab === 'Stickers' && (
                      <div className="grid grid-cols-3 gap-3">
                        {STICKERS.map(s => (
@@ -287,8 +309,14 @@ const StyleBoard = ({ addToBag }) => {
 
           {/* RIGHT: CANVAS */}
           <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
-             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} rounded-3xl shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
-                <div className="text-center mb-8 z-10">
+             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} rounded-none shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
+                
+                {/* Theme Decorations */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                   {theme.decoration}
+                </div>
+
+                <div className="text-center mb-8 z-10 relative">
                    <span className={`inline-block px-4 py-1 rounded-full bg-white/50 backdrop-blur-sm text-xs font-bold uppercase tracking-widest mb-2 ${theme.text} shadow-sm`}>Cruisy Trip Kit</span>
                    <h2 className={`text-4xl font-header ${theme.text} drop-shadow-sm`}>{currentTheme} Vibe</h2>
                 </div>
@@ -299,28 +327,35 @@ const StyleBoard = ({ addToBag }) => {
                         key={item.boardId} 
                         className={`relative group animate-in fade-in zoom-in duration-300 ${
                           item.size === 'medium' ? 'col-span-2 row-span-2' : 
-                          item.size === 'large' ? 'col-span-4' : 
+                          item.size === 'large' ? 'col-span-2 row-span-2' : 
                           'col-span-1'
                         }`}
                      >
-                        <div className="absolute -top-2 -right-2 z-20 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                        <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                            <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
                         </div>
 
-                        {item.type === 'product' && (
-                          <div className={`bg-white p-3 rounded-2xl shadow-sm border border-white/50 flex flex-col items-center text-center h-full justify-center transform hover:rotate-1 transition-transform`}>
-                             <div className={`p-3 rounded-full mb-2 ${theme.accent} text-white`}>{item.icon || <Star size={16}/>}</div>
-                             <span className="text-xs font-bold text-gray-700 leading-tight">{item.name}</span>
+                        {(item.type === 'product' || item.type === 'photo') && (
+                          <div className={`relative w-full h-full bg-white p-2 shadow-lg transform hover:rotate-1 transition-transform overflow-hidden ${item.type === 'product' ? 'rounded-lg' : 'rounded-none'}`}>
+                             <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                             {item.type === 'product' && (
+                               <div className="absolute bottom-0 left-0 right-0 bg-white/90 p-1 text-[10px] font-bold text-center truncate">
+                                 {item.name}
+                               </div>
+                             )}
                           </div>
                         )}
                         {item.type === 'sticker' && <div className="flex justify-center items-center h-full transform hover:scale-110 transition-transform"><span className="text-5xl drop-shadow-md filter">{item.name}</span></div>}
-                        {item.type === 'note' && <div className="bg-yellow-200 p-3 rounded-tl-xl rounded-br-xl shadow-md rotate-[-2deg] hover:rotate-0 transition-transform h-full"><textarea placeholder="Note..." className="w-full bg-transparent border-none text-xs font-handwriting text-yellow-900 focus:ring-0 resize-none h-full placeholder-yellow-700/50"/></div>}
+                        {item.type === 'note' && <div className="bg-yellow-200 p-3 shadow-md rotate-[-2deg] hover:rotate-0 transition-transform h-full font-handwriting"><textarea placeholder="Note..." className="w-full h-full bg-transparent border-none text-xs text-yellow-900 focus:ring-0 resize-none placeholder-yellow-700/50"/></div>}
                      </div>
                    ))}
+                   
                    {boardItems.length === 0 && (
                      <div className="col-span-4 h-64 flex flex-col items-center justify-center text-center opacity-30">
-                        <Camera size={48} className={theme.text}/><p className={`mt-2 font-bold ${theme.text}`}>Board Empty</p><p className="text-xs">Select items from the menu</p>
+                        <Camera size={48} className={theme.text}/>
+                        <p className={`mt-2 font-bold ${theme.text}`}>Start Creating</p>
+                        <p className="text-xs">Add items from the menu</p>
                      </div>
                    )}
                 </div>
@@ -328,9 +363,8 @@ const StyleBoard = ({ addToBag }) => {
 
              <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button onClick={() => setBoardItems([])} className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:bg-gray-200 transition-colors">Clear</button>
-                <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"><Download size={18} className="mr-2"/> Save / Print PDF</button>
+                <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"><Download size={18} className="mr-2"/> Save Board</button>
                 
-                {/* Social Share */}
                 <div className="flex gap-2 ml-4 border-l border-gray-200 pl-4 items-center">
                    <span className="text-xs font-bold text-gray-400 mr-2">SHARE:</span>
                    <button onClick={() => handleShare('facebook')} className="p-2 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform"><Facebook size={16}/></button>
@@ -345,6 +379,7 @@ const StyleBoard = ({ addToBag }) => {
   );
 };
 
+// ... Planner, MyBag, and Main App remain similar but using new Image Data ...
 const Planner = ({ addToBag }) => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
     <div className="text-center mb-16">
@@ -355,7 +390,7 @@ const Planner = ({ addToBag }) => (
        {ESSENTIALS_DATA.map(item => (
          <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:border-brand border border-transparent transition-all">
             <div className="flex items-center">
-               <div className="bg-gray-100 p-3 rounded-xl mr-4 text-gray-500 group-hover:text-brand">{item.icon}</div>
+               <img src={item.img} className="w-12 h-12 rounded-lg object-cover mr-4 shadow-sm" />
                <div><p className="font-bold text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
             </div>
             <button onClick={() => addToBag(item)} className="p-2 bg-gray-50 rounded-full hover:bg-brand hover:text-white transition-all"><Plus size={18}/></button>
@@ -389,6 +424,7 @@ const MyBag = ({ myBag, setMyBag, removeFromBag, toggleCheck, estimatedTotal, ha
                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
                   <div className="flex items-center">
                      <button onClick={() => toggleCheck(item.id)} className={`mr-4 ${item.checked ? 'text-brand' : 'text-gray-300'}`}>{item.checked ? <CheckSquare size={24}/> : <Square size={24}/>}</button>
+                     {item.img && <img src={item.img} className="w-10 h-10 rounded-md object-cover mr-3" />}
                      <span className={`font-medium ${item.checked ? 'line-through text-gray-300' : 'text-gray-800'}`}>{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -419,7 +455,6 @@ export default function App() {
   const estimatedTotal = useMemo(() => myBag.reduce((acc, curr) => acc + curr.price, 0).toFixed(2), [myBag]);
 
   const handleBuy = (itemName) => {
-    // Uses the configured affiliate tag for Search
     window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=${AMAZON_TAG}`, '_blank');
   };
 
@@ -448,4 +483,4 @@ export default function App() {
       `}</style>
     </div>
   );
-                            }
+    }
