@@ -3,7 +3,7 @@ import {
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, Anchor, Camera, X, Plus, ArrowRight, Compass, Watch, Smartphone,
   Umbrella, Plane, Mountain, Snowflake, Building, Type,
-  Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook
+  Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook, Map as MapIcon
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -15,7 +15,9 @@ const safeLocalStorage = {
   getItem: (key, fallback) => {
     try {
       const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : fallback;
+      // Extra safety: Check if parsed item is actually valid
+      const parsed = item ? JSON.parse(item) : fallback;
+      return parsed !== null && parsed !== undefined ? parsed : fallback;
     } catch (e) { return fallback; }
   },
   setItem: (key, value) => {
@@ -221,22 +223,21 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag, setView }) => {
-  // SAFETY CHECK: Use new keys (_v5) to fix white screen
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    const saved = safeLocalStorage.getItem('cruisyTheme_v5', 'Cruise');
-    return THEMES[saved] ? saved : 'Cruise'; // Safety check
-  });
-  
-  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v5', []));
+  // SAFETY CHECK: Use new keys (_v6) to completely reset storage logic
+  const [currentTheme, setCurrentTheme] = useState(() => safeLocalStorage.getItem('cruisyTheme_v6', 'Cruise'));
+  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v6', []));
   const [activeTab, setActiveTab] = useState('Vibes');
   
   useEffect(() => {
-    safeLocalStorage.setItem('cruisyTheme_v5', currentTheme);
-    safeLocalStorage.setItem('cruisyBoardItems_v5', boardItems);
+    safeLocalStorage.setItem('cruisyTheme_v6', currentTheme);
+    safeLocalStorage.setItem('cruisyBoardItems_v6', boardItems);
   }, [currentTheme, boardItems]);
 
   const theme = THEMES[currentTheme] || THEMES['Cruise'];
   const vibeItems = TRAVEL_VIBES[theme.vibes] || TRAVEL_VIBES['Airport Comfort'];
+  
+  // Ensure boardItems is always an array to prevent crash
+  const validBoardItems = Array.isArray(boardItems) ? boardItems : [];
 
   const addToBoard = (item, type = 'product') => {
     const randomRotation = Math.floor(Math.random() * 6) - 3; 
@@ -248,14 +249,14 @@ const StyleBoard = ({ addToBag, setView }) => {
       size: initialSize,
       rotation: randomRotation 
     };
-    setBoardItems([...boardItems, newItem]);
+    setBoardItems([...validBoardItems, newItem]);
     if (type === 'product') addToBag(item);
   };
 
-  const removeFromBoard = (boardId) => setBoardItems(boardItems.filter(i => i.boardId !== boardId));
+  const removeFromBoard = (boardId) => setBoardItems(validBoardItems.filter(i => i.boardId !== boardId));
 
   const toggleSize = (boardId) => {
-    setBoardItems(boardItems.map(item => {
+    setBoardItems(validBoardItems.map(item => {
       // Prevents resizing for stickers
       if (item.boardId === boardId && item.type !== 'sticker') {
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
@@ -266,7 +267,7 @@ const StyleBoard = ({ addToBag, setView }) => {
   };
 
   const moveItem = (index, direction) => {
-    const newItems = [...boardItems];
+    const newItems = [...validBoardItems];
     if (direction === 'left' && index > 0) {
       [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
     } else if (direction === 'right' && index < newItems.length - 1) {
@@ -276,7 +277,7 @@ const StyleBoard = ({ addToBag, setView }) => {
   };
 
   const shuffleLayout = () => {
-    const shuffled = [...boardItems].sort(() => Math.random() - 0.5);
+    const shuffled = [...validBoardItems].sort(() => Math.random() - 0.5);
     const reRotated = shuffled.map(item => ({...item, rotation: Math.floor(Math.random() * 10) - 5}));
     setBoardItems(reRotated);
   };
@@ -364,14 +365,18 @@ const StyleBoard = ({ addToBag, setView }) => {
                 </div>
 
                 <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
-                   {boardItems.map((item, index) => (
+                   {validBoardItems.map((item, index) => (
                      <div 
                         key={item.boardId} 
-                        className={`relative group animate-in fade-in zoom-in duration-300 ${item.size === 'medium' ? 'col-span-2 row-span-2' : item.size === 'large' ? 'col-span-2 row-span-2' : 'col-span-1'}`}
+                        className={`relative group animate-in fade-in zoom-in duration-300 ${
+                          item.size === 'medium' ? 'col-span-2 row-span-2' : 
+                          item.size === 'large' ? 'col-span-2 row-span-2' : 
+                          'col-span-1'
+                        }`}
                      >
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowLeft size={10}/></button>
-                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowRight size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Left"><ArrowLeft size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Right"><ArrowRight size={10}/></button>
                            
                            {/* RESIZE BUTTON - HIDDEN FOR STICKERS */}
                            {item.type !== 'sticker' && (
@@ -402,7 +407,7 @@ const StyleBoard = ({ addToBag, setView }) => {
                         )}
                      </div>
                    ))}
-                   {boardItems.length === 0 && <div className="col-span-4 h-64 flex flex-col items-center justify-center text-center opacity-30"><Camera size={48} className={theme.text}/><p className={`mt-2 font-bold ${theme.text}`}>Start Creating</p><p className="text-xs">Add items from the menu</p></div>}
+                   {validBoardItems.length === 0 && <div className="col-span-4 h-64 flex flex-col items-center justify-center text-center opacity-30"><Camera size={48} className={theme.text}/><p className={`mt-2 font-bold ${theme.text}`}>Start Creating</p><p className="text-xs">Add items from the menu</p></div>}
                 </div>
              </div>
 
@@ -410,6 +415,7 @@ const StyleBoard = ({ addToBag, setView }) => {
                 <button onClick={shuffleLayout} className="flex items-center px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-colors shadow-sm"><Shuffle size={18} className="mr-2"/> Shuffle Layout</button>
                 <button onClick={() => setBoardItems([])} className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:text-red-500 transition-colors">Clear</button>
                 <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-teal-600 transition-all"><Download size={18} className="mr-2"/> Save / Print PDF</button>
+                
                 <div className="flex gap-2 ml-4 border-l border-gray-200 pl-4 items-center">
                    <span className="text-xs font-bold text-gray-400 mr-2">SHARE:</span>
                    <button onClick={() => handleShare('facebook')} className="p-2 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform"><Facebook size={16}/></button>
@@ -424,113 +430,4 @@ const StyleBoard = ({ addToBag, setView }) => {
     </div>
   );
 };
-const Planner = ({ addToBag, setView }) => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
-    <div className="flex justify-between items-center mb-8">
-       <button onClick={() => setView('home')} className="flex items-center text-gray-500 hover:text-teal-600 font-bold"><ArrowLeft size={18} className="mr-2"/> Home</button>
-       <button onClick={() => setView('styleboard')} className="flex items-center bg-white text-teal-600 border border-teal-600 px-4 py-2 rounded-lg font-bold hover:bg-teal-600 hover:text-white transition-all">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
-    </div>
-    <div className="text-center mb-12">
-      <h2 className="text-4xl font-header text-gray-900 mb-4">Essentials List</h2>
-      <p className="text-lg text-gray-500">Quick-add the basics to your shopping bag.</p>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-       {ESSENTIALS_DATA.map(item => (
-         <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:border-teal-500 border border-transparent transition-all">
-            <div className="flex items-center">
-               <img src={item.img} className="w-16 h-16 rounded-lg object-cover mr-4 shadow-sm border border-gray-100" />
-               <div><p className="font-bold text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
-            </div>
-            <button onClick={() => addToBag(item)} className="p-2 bg-gray-50 rounded-full hover:bg-teal-600 hover:text-white transition-all"><Plus size={18}/></button>
-         </div>
-       ))}
-    </div>
-  </div>
-);
 
-const MyBag = ({ myBag, setMyBag, removeFromBag, toggleCheck, estimatedTotal, handleBuy, setView }) => {
-  return (
-    <div className="max-w-3xl mx-auto px-4 py-12 min-h-screen">
-      <div className="flex justify-between items-center mb-8">
-         <button onClick={() => setView('planner')} className="flex items-center text-gray-500 hover:text-teal-600 font-bold"><ArrowLeft size={18} className="mr-2"/> Back to Essentials</button>
-         <button onClick={() => setView('styleboard')} className="flex items-center text-teal-600 hover:text-gray-900 font-bold">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
-      </div>
-      <div className="flex items-center justify-between mb-8">
-         <h2 className="text-3xl font-header text-gray-900">Your Trip Kit</h2>
-      </div>
-      {myBag.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-           <ShoppingBag size={64} className="mx-auto text-gray-200 mb-4"/>
-           <p className="text-gray-500">Empty Bag.</p>
-           <button onClick={() => setView('styleboard')} className="mt-4 font-bold text-teal-600">Create a Board</button>
-        </div>
-      ) : (
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-           <div className="p-6 bg-gray-50 flex justify-between items-center border-b border-gray-100">
-              <span className="font-bold text-gray-500 text-xs uppercase">{myBag.length} Items</span>
-              <span className="font-header text-2xl text-gray-900">${estimatedTotal}</span>
-           </div>
-           <div className="divide-y divide-gray-50">
-             {myBag.map(item => (
-               <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
-                  <div className="flex items-center">
-                     <button onClick={() => toggleCheck(item.id)} className={`mr-4 ${item.checked ? 'text-teal-600' : 'text-gray-300'}`}>{item.checked ? <CheckSquare size={24}/> : <Square size={24}/>}</button>
-                     {item.img && <img src={item.img} className="w-10 h-10 rounded-md object-cover mr-3" />}
-                     <span className={`font-medium ${item.checked ? 'line-through text-gray-300' : 'text-gray-800'}`}>{item.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <button onClick={() => handleBuy(item.name)} className="px-3 py-1.5 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-cyan-600">Amazon</button>
-                     <button onClick={() => removeFromBag(item.id)} className="p-2 text-gray-300 hover:text-red-500"><Trash2 size={18}/></button>
-                  </div>
-               </div>
-             ))}
-           </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default function App() {
-  const [view, setView] = useState('home'); 
-  const [myBag, setMyBag] = useState([]);
-
-  const addToBag = (item) => {
-    const bagItem = { ...item, id: item.id + '_' + Date.now(), checked: false };
-    setMyBag([...myBag, bagItem]);
-  };
-
-  const removeFromBag = (id) => setMyBag(myBag.filter(i => i.id !== id));
-  const toggleCheck = (id) => setMyBag(myBag.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
-  const estimatedTotal = useMemo(() => myBag.reduce((acc, curr) => acc + curr.price, 0).toFixed(2), [myBag]);
-
-  const handleBuy = (itemName) => {
-    window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=${AMAZON_TAG}`, '_blank');
-  };
-
-  return (
-    <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
-      <div className="print:hidden">
-        <Header view={view} setView={setView} myBagCount={myBag.length} />
-      </div>
-      <div className="flex-grow">
-        {view === 'home' && <Hero setView={setView} />}
-        {view === 'planner' && <Planner addToBag={addToBag} setView={setView} />}
-        {view === 'styleboard' && <StyleBoard addToBag={addToBag} setView={setView} />}
-        {view === 'mybag' && <MyBag myBag={myBag} setMyBag={setMyBag} removeFromBag={removeFromBag} toggleCheck={toggleCheck} estimatedTotal={estimatedTotal} handleBuy={handleBuy} setView={setView} />}
-      </div>
-      <div className="print:hidden">
-        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2025-2026 Cruisy Travel.</footer>
-      </div>
-      <style>{`
-        @media print {
-          @page { margin: 0; size: auto; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          #print-area { position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; z-index: 9999; }
-          body > *:not(.flex-grow) { display: none; }
-          .flex-grow > *:not(:has(#print-area)) { display: none; }
-        }
-      `}</style>
-    </div>
-  );
-}
