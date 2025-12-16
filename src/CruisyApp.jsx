@@ -32,8 +32,8 @@ const THEMES = {
     border: 'border-[12px] border-teal-200 border-double',
     decoration: (
       <>
-        <div className="absolute top-4 right-4 text-teal-800/10"><Anchor size={140} /></div>
-        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-teal-100/40 to-transparent"></div>
+        <div className="absolute top-4 right-4 text-teal-800/10 pointer-events-none"><Anchor size={140} /></div>
+        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-teal-100/40 to-transparent pointer-events-none"></div>
       </>
     ),
     vibes: 'Tropical Beach'
@@ -44,8 +44,8 @@ const THEMES = {
     border: 'border-[16px] border-orange-200 border-dashed',
     decoration: (
       <>
-        <div className="absolute -top-10 -right-10 text-yellow-400/20"><Sun size={240} /></div>
-        <div className="absolute bottom-4 right-4 text-orange-400/20"><Umbrella size={100} /></div>
+        <div className="absolute -top-10 -right-10 text-yellow-400/20 pointer-events-none"><Sun size={240} /></div>
+        <div className="absolute bottom-4 right-4 text-orange-400/20 pointer-events-none"><Umbrella size={100} /></div>
       </>
     ),
     vibes: 'Tropical Beach'
@@ -56,8 +56,8 @@ const THEMES = {
     border: 'border-[10px] border-blue-100 rounded-none',
     decoration: (
       <>
-        <div className="absolute top-4 left-4 text-blue-200/50"><Snowflake size={80} /></div>
-        <div className="absolute bottom-8 right-8 text-blue-300/30"><Snowflake size={120} /></div>
+        <div className="absolute top-4 left-4 text-blue-200/50 pointer-events-none"><Snowflake size={80} /></div>
+        <div className="absolute bottom-8 right-8 text-blue-300/30 pointer-events-none"><Snowflake size={120} /></div>
       </>
     ),
     vibes: 'Cold Adventure'
@@ -69,7 +69,7 @@ const THEMES = {
     decoration: (
       <>
         <div className="absolute bottom-0 w-full h-40 opacity-10 pointer-events-none bg-gradient-to-t from-zinc-500 to-transparent"></div>
-        <div className="absolute top-4 right-4 text-zinc-300"><Building size={100} /></div>
+        <div className="absolute top-4 right-4 text-zinc-300 pointer-events-none"><Building size={100} /></div>
       </>
     ),
     vibes: 'City Exploring'
@@ -80,8 +80,8 @@ const THEMES = {
     border: 'border-[10px] border-amber-300 border-dotted',
     decoration: (
       <>
-        <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-200 to-transparent"></div>
-        <div className="absolute bottom-4 left-4 text-amber-300/40"><Sun size={80} /></div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-200 to-transparent pointer-events-none"></div>
+        <div className="absolute bottom-4 left-4 text-amber-300/40 pointer-events-none"><Sun size={80} /></div>
       </>
     ),
     vibes: 'Airport Comfort'
@@ -96,13 +96,11 @@ const STICKERS = [
   { id: 's6', content: '🕶️', type: 'emoji' },
   { id: 's9', content: '🛳️', type: 'emoji' },
   { id: 's10', content: '⚓', type: 'emoji' },
-  // Holidays
   { id: 'h1', content: '🎄', type: 'emoji' },
   { id: 'h2', content: '🎅', type: 'emoji' },
   { id: 'h3', content: '🦃', type: 'emoji' },
   { id: 'h4', content: '🎃', type: 'emoji' },
   { id: 'h5', content: '🎆', type: 'emoji' },
-  // Text
   { id: 't1', content: 'Passport Ready', type: 'text' },
   { id: 't2', content: 'Vacay Mode', type: 'text' },
   { id: 't3', content: 'Out of Office', type: 'text' },
@@ -245,7 +243,8 @@ const StyleBoard = ({ addToBag, setView }) => {
 
   const addToBoard = (item, type = 'product') => {
     const randomRotation = Math.floor(Math.random() * 6) - 3; 
-    const initialSize = type === 'sticker' ? 'fixed' : 'small'; 
+    // Stickers default to 'large' (fixed) size
+    const initialSize = type === 'sticker' ? 'large' : 'small'; 
     const newItem = { 
       ...item, 
       boardId: Date.now() + Math.random(), 
@@ -261,7 +260,7 @@ const StyleBoard = ({ addToBag, setView }) => {
 
   const toggleSize = (boardId) => {
     setBoardItems(boardItems.map(item => {
-      if (item.boardId === boardId && item.type !== 'sticker') {
+      if (item.boardId === boardId) {
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
         return { ...item, size: nextSize };
       }
@@ -359,15 +358,13 @@ const StyleBoard = ({ addToBag, setView }) => {
           {/* RIGHT: CANVAS */}
           <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
              <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
-                
                 <div className="absolute inset-0 pointer-events-none z-0">{theme.decoration}</div>
                 
-                {/* BRANDING HEADER - UPDATED */}
+                {/* BRANDING HEADER - CORRECTED */}
                 <div className="text-center mb-8 z-10 relative">
-                   <h2 className={`text-4xl md:text-5xl font-header ${theme.text} drop-shadow-sm leading-tight`}>My Cruisy Travel</h2>
-                   <div className="inline-flex items-center justify-center px-6 py-1.5 mt-2 rounded-full bg-white/60 backdrop-blur-md shadow-sm border border-white/20">
-                     <span className={`text-sm font-bold uppercase tracking-[0.2em] ${theme.text}`}>Getaway</span>
-                   </div>
+                   <h2 className={`text-4xl md:text-5xl font-header ${theme.text} drop-shadow-sm leading-tight`}>
+                     My Cruisy Travel Getaway
+                   </h2>
                 </div>
 
                 <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
@@ -383,7 +380,7 @@ const StyleBoard = ({ addToBag, setView }) => {
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Left"><ArrowLeft size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Right"><ArrowRight size={10}/></button>
-                           {/* No Resize for Stickers */}
+                           {/* RESIZE BUTTON HIDDEN FOR STICKERS */}
                            {item.type !== 'sticker' && <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>}
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
                         </div>
@@ -521,4 +518,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
-      <div className="print:hidde
+      <div className="print:hidden">
+        <Header view={view} setView={setView} myBagCount={myBag.length} />
+      </div>
+      <div className="flex-grow">
+        {view === 'home' && <Hero setView={setView} />}
+        {view === 'planner' && <Planner addToBag={addToBag} s
