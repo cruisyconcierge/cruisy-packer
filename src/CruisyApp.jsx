@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Suitcase, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
+  Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
   X, Plus, ArrowRight, Smile, User
 } from 'lucide-react';
@@ -156,7 +156,7 @@ const Hero = ({ setView }) => (
          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand opacity-10 blur-3xl"></div>
          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white to-transparent"></div>
          <div className="flex flex-col items-center justify-center h-full text-brand/20 space-y-8">
-            <Suitcase size={180} />
+            <Luggage size={180} />
          </div>
       </div>
     </div>
@@ -470,4 +470,4 @@ export default function App() {
       </footer>
     </div>
   );
-      }
+}
