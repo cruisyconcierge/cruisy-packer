@@ -11,6 +11,26 @@ import {
 // --- AFFILIATE CONFIGURATION ---
 const AMAZON_TAG = 'cruisytravel-20'; 
 
+// --- SAFETY HELPERS (Prevents White Screen Crash) ---
+const safeLocalStorage = {
+  getItem: (key, fallback) => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : fallback;
+    } catch (e) {
+      console.warn("Storage access denied or error:", e);
+      return fallback;
+    }
+  },
+  setItem: (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      // Ignore write errors in restricted iframes
+    }
+  }
+};
+
 // --- CONFIGURATION ---
 const THEMES = {
   'Cruise': {
@@ -183,12 +203,12 @@ const Hero = ({ setView }) => (
       </div>
       
       <h1 className="text-6xl md:text-8xl font-header text-gray-900 mb-8 leading-tight tracking-tight">
-        Plan Your <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">Next Adventure.</span>
+        Style Your <br/>
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">Next Getaway.</span>
       </h1>
       
       <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-        Build a visual packing board for any trip—from holidays to summer vacations. Create your aesthetic, add essentials, and shop directly from Amazon.
+        Don't just pack—curate. Build a visual style board of outfits, essentials, and travel gear for your upcoming voyage.
       </p>
       
       <div className="flex flex-col sm:flex-row justify-center gap-4 mb-20">
@@ -219,26 +239,22 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag }) => {
-  // SAFETY CHECK: Load theme safely. If invalid, default to 'Cruise'
+  // SAFETY CHECK: Load theme safely via helper
   const [currentTheme, setCurrentTheme] = useState(() => {
-    const saved = localStorage.getItem('cruisyTheme');
+    const saved = safeLocalStorage.getItem('cruisyTheme', 'Cruise');
     return THEMES[saved] ? saved : 'Cruise';
   });
 
-  // SAFETY CHECK: Load items safely. If corrupt, default to empty array
+  // SAFETY CHECK: Load items safely via helper
   const [boardItems, setBoardItems] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('cruisyBoardItems') || '[]');
-    } catch {
-      return [];
-    }
+    return safeLocalStorage.getItem('cruisyBoardItems', []);
   });
 
   const [activeTab, setActiveTab] = useState('Vibes');
   
   useEffect(() => {
-    localStorage.setItem('cruisyTheme', currentTheme);
-    localStorage.setItem('cruisyBoardItems', JSON.stringify(boardItems));
+    safeLocalStorage.setItem('cruisyTheme', currentTheme);
+    safeLocalStorage.setItem('cruisyBoardItems', boardItems);
   }, [currentTheme, boardItems]);
 
   const theme = THEMES[currentTheme] || THEMES['Cruise'];
@@ -526,4 +542,4 @@ export default function App() {
       `}</style>
     </div>
   );
-                            }
+}
