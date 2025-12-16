@@ -154,10 +154,12 @@ const Header = ({ view, setView, myBagCount }) => (
   <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
+        
         <div className="flex items-center cursor-pointer group" onClick={() => setView('home')}>
           <img src={BRAND_LOGO} alt="Cruisy Travel" className="h-10 w-auto mr-2" />
           <span className="sr-only">Cruisy Travel Trip Kit</span>
         </div>
+        
         <div className="flex items-center space-x-2 md:space-x-4">
           <button onClick={() => setView('planner')} className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'planner' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Essentials</button>
           <button onClick={() => setView('styleboard')} className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'styleboard' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Style Board</button>
@@ -182,17 +184,25 @@ const Hero = ({ setView }) => (
          <Plane size={14} className="text-teal-600 mr-2" />
          <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Universal Packing Tool</span>
       </div>
+      
       <h1 className="text-6xl md:text-8xl font-header text-gray-900 mb-8 leading-tight tracking-tight">
         Style Your <br/>
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-400">Next Getaway.</span>
       </h1>
+      
       <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
         Don't just pack—curate. Build a visual style board of outfits, essentials, and travel gear for your upcoming voyage.
       </p>
+      
       <div className="flex flex-col sm:flex-row justify-center gap-4 mb-20">
-        <button onClick={() => setView('styleboard')} className="flex items-center justify-center px-10 py-5 bg-teal-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-teal-200 hover:bg-teal-700 hover:scale-105 transition-all"><Camera className="mr-2" /> Create Board</button>
-        <button onClick={() => setView('planner')} className="flex items-center justify-center px-10 py-5 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition-all"><CheckSquare className="mr-2" /> View Essentials</button>
+        <button onClick={() => setView('styleboard')} className="flex items-center justify-center px-10 py-5 bg-teal-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-teal-200 hover:bg-teal-700 hover:scale-105 transition-all">
+          <Camera className="mr-2" /> Create Board
+        </button>
+        <button onClick={() => setView('planner')} className="flex items-center justify-center px-10 py-5 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition-all">
+          <CheckSquare className="mr-2" /> View Essentials
+        </button>
       </div>
+
       <div className="border-t border-gray-100 pt-12">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
         <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
@@ -211,7 +221,7 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag, setView }) => {
-  // Use keys _v5 to force reset and fix white screen
+  // SAFETY CHECK: Use new keys (_v5) to fix white screen
   const [currentTheme, setCurrentTheme] = useState(() => {
     const saved = safeLocalStorage.getItem('cruisyTheme_v5', 'Cruise');
     return THEMES[saved] ? saved : 'Cruise'; // Safety check
@@ -231,7 +241,13 @@ const StyleBoard = ({ addToBag, setView }) => {
   const addToBoard = (item, type = 'product') => {
     const randomRotation = Math.floor(Math.random() * 6) - 3; 
     const initialSize = type === 'sticker' ? 'large' : 'small'; 
-    const newItem = { ...item, boardId: Date.now() + Math.random(), type, size: initialSize, rotation: randomRotation };
+    const newItem = { 
+      ...item, 
+      boardId: Date.now() + Math.random(), 
+      type, 
+      size: initialSize,
+      rotation: randomRotation 
+    };
     setBoardItems([...boardItems, newItem]);
     if (type === 'product') addToBag(item);
   };
@@ -339,9 +355,12 @@ const StyleBoard = ({ addToBag, setView }) => {
              <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
                 <div className="absolute inset-0 pointer-events-none z-0">{theme.decoration}</div>
                 
+                {/* BRANDING HEADER */}
                 <div className="text-center mb-8 z-10 relative flex flex-col items-center">
                    <img src={BRAND_LOGO} alt="Cruisy Travel" className="h-12 w-auto mb-2 opacity-90 mix-blend-multiply" />
-                   <h2 className={`text-3xl font-header ${theme.text} drop-shadow-sm leading-tight`}>My Cruisy Travel Getaway</h2>
+                   <h2 className={`text-3xl font-header ${theme.text} drop-shadow-sm leading-tight`}>
+                     My Cruisy Travel Getaway
+                   </h2>
                 </div>
 
                 <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
@@ -353,8 +372,12 @@ const StyleBoard = ({ addToBag, setView }) => {
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowLeft size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowRight size={10}/></button>
-                           {/* HIDDEN RESIZE FOR STICKERS */}
-                           {item.type !== 'sticker' && <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>}
+                           
+                           {/* RESIZE BUTTON - HIDDEN FOR STICKERS */}
+                           {item.type !== 'sticker' && (
+                             <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>
+                           )}
+                           
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
                         </div>
 
@@ -365,7 +388,11 @@ const StyleBoard = ({ addToBag, setView }) => {
                           </div>
                         )}
                         
-                        {item.type === 'sticker' && <div className="flex justify-center items-center h-full w-full" style={{transform: `rotate(${item.rotation}deg)`}}><span className="text-6xl drop-shadow-md filter">{item.name}</span></div>}
+                        {item.type === 'sticker' && (
+                          <div className="flex justify-center items-center h-full w-full" style={{transform: `rotate(${item.rotation}deg)`}}>
+                             <span className="text-6xl drop-shadow-md filter">{item.name}</span>
+                          </div>
+                        )}
                         
                         {item.type === 'note' && (
                           <div className="bg-white p-4 shadow-lg h-full relative" style={{transform: `rotate(${item.rotation}deg)`, background: 'linear-gradient(to bottom, #fff 0%, #fff 100%), linear-gradient(to bottom, #dbeafe 1px, transparent 1px)', backgroundSize: '100% 24px'}}>
