@@ -2,278 +2,313 @@ import React, { useState, useMemo } from 'react';
 import { 
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
-  X, Plus, ArrowRight, Smile, User, Map, Compass
+  X, Plus, ArrowRight, Smile, User, Map, Compass, Watch, Smartphone,
+  Umbrella, Coffee
 } from 'lucide-react';
 
-// --- DATA & CONFIG ---
+// --- ASSETS: SVG MANNEQUINS ---
+const MannequinSVG = ({ gender, bodyType, clothing }) => {
+  // Simple SVG paths for silhouettes
+  const malePath = "M100,50 C100,20 130,20 130,50 C130,65 145,70 160,75 L160,160 L145,160 L145,280 L160,280 L160,450 L125,450 L125,300 L115,300 L115,450 L80,450 L80,280 L95,280 L95,160 L80,160 L80,75 C95,70 100,65 100,50 Z";
+  const femalePath = "M100,50 C100,20 130,20 130,50 C130,65 115,70 150,75 C165,80 160,140 160,160 C160,180 170,200 160,220 L155,450 L125,450 L125,300 L115,300 L115,450 L85,450 L80,220 C70,200 80,180 80,160 C80,140 75,80 90,75 C125,70 100,65 100,50 Z";
+  
+  // Dynamic width adjustment for body type
+  const scaleX = bodyType === 'plus' ? 1.3 : bodyType === 'petite' ? 0.9 : 1;
+  const path = gender === 'male' ? malePath : femalePath;
+
+  return (
+    <div className="relative w-64 h-96 mx-auto transition-all duration-500">
+      <svg viewBox="0 0 240 500" className="w-full h-full drop-shadow-2xl">
+        <defs>
+          <linearGradient id="skinGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{stopColor:"#e5e7eb", stopOpacity:1}} />
+            <stop offset="50%" style={{stopColor:"#f3f4f6", stopOpacity:1}} />
+            <stop offset="100%" style={{stopColor:"#d1d5db", stopOpacity:1}} />
+          </linearGradient>
+        </defs>
+        
+        {/* The Body Silhouette */}
+        <path 
+          d={path} 
+          fill="url(#skinGradient)" 
+          stroke="#9ca3af" 
+          strokeWidth="2"
+          transform={`scale(${scaleX}, 1) translate(${bodyType === 'plus' ? -20 : bodyType === 'petite' ? 10 : 0}, 0)`}
+        />
+      </svg>
+
+      {/* VISUAL OVERLAYS (Clothing Items appear here) */}
+      <div className="absolute inset-0 flex flex-col items-center pt-20">
+        {/* TOP */}
+        <div className={`transition-all duration-500 ${clothing.top ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+           {clothing.top && (
+             <div className={`p-4 rounded-xl shadow-lg ${clothing.top.color} flex items-center justify-center transform hover:scale-110 transition-transform`}>
+               <Shirt size={40} className="text-gray-800 opacity-75" />
+             </div>
+           )}
+        </div>
+        
+        {/* BOTTOM */}
+        <div className={`mt-2 transition-all duration-500 delay-75 ${clothing.bottom ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+           {clothing.bottom && (
+             <div className={`p-4 w-20 h-24 rounded-lg shadow-lg ${clothing.bottom.color} flex items-center justify-center transform hover:scale-110 transition-transform`}>
+               {/* Just a visual block for pants/shorts */}
+             </div>
+           )}
+        </div>
+
+        {/* SHOES */}
+        <div className={`absolute bottom-8 flex space-x-8 transition-all duration-500 delay-150 ${clothing.shoes ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+           {clothing.shoes && (
+             <>
+               <div className={`w-8 h-6 rounded-md shadow-md ${clothing.shoes.color}`}></div>
+               <div className={`w-8 h-6 rounded-md shadow-md ${clothing.shoes.color}`}></div>
+             </>
+           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- DATA ---
 const OUTFIT_DATA = {
   male: {
     casual: [
-      { id: 'm_c_1', name: 'Linen Button Down', price: 28.99, type: 'top', color: 'bg-blue-100' },
-      { id: 'm_c_2', name: 'Chino Shorts', price: 24.50, type: 'bottom', color: 'bg-orange-50' },
-      { id: 'm_c_3', name: 'Boat Shoes', price: 55.00, type: 'shoes', color: 'bg-stone-200' },
+      { id: 'm_c_1', name: 'Linen Button Down', price: 28.99, type: 'top', color: 'bg-blue-200' },
+      { id: 'm_c_2', name: 'Chino Shorts', price: 24.50, type: 'bottom', color: 'bg-orange-100' },
+      { id: 'm_c_3', name: 'Boat Shoes', price: 55.00, type: 'shoes', color: 'bg-stone-400' },
     ],
     formal: [
-      { id: 'm_f_1', name: 'Navy Blazer', price: 89.99, type: 'top', color: 'bg-blue-900 text-white' },
+      { id: 'm_f_1', name: 'Navy Blazer', price: 89.99, type: 'top', color: 'bg-blue-800' },
       { id: 'm_f_2', name: 'Crisp White Shirt', price: 45.00, type: 'top_layer', color: 'bg-white border' },
-      { id: 'm_f_3', name: 'Slim Fit Slacks', price: 39.99, type: 'bottom', color: 'bg-gray-700 text-white' },
-      { id: 'm_f_4', name: 'Leather Loafers', price: 70.00, type: 'shoes', color: 'bg-amber-900 text-white' },
+      { id: 'm_f_3', name: 'Slim Fit Slacks', price: 39.99, type: 'bottom', color: 'bg-gray-700' },
+      { id: 'm_f_4', name: 'Leather Loafers', price: 70.00, type: 'shoes', color: 'bg-amber-900' },
     ],
     active: [
-      { id: 'm_a_1', name: 'Moisture Wick Tee', price: 18.00, type: 'top', color: 'bg-gray-200' },
-      { id: 'm_a_2', name: 'Swim Trunks', price: 22.00, type: 'bottom', color: 'bg-cyan-200' },
-      { id: 'm_a_3', name: 'Water Shoes', price: 30.00, type: 'shoes', color: 'bg-gray-800 text-white' },
+      { id: 'm_a_1', name: 'Moisture Wick Tee', price: 18.00, type: 'top', color: 'bg-gray-300' },
+      { id: 'm_a_2', name: 'Swim Trunks', price: 22.00, type: 'bottom', color: 'bg-cyan-300' },
+      { id: 'm_a_3', name: 'Water Shoes', price: 30.00, type: 'shoes', color: 'bg-black' },
     ]
   },
   female: {
     casual: [
-      { id: 'f_c_1', name: 'Floral Maxi Dress', price: 35.00, type: 'full', color: 'bg-rose-100' },
+      { id: 'f_c_1', name: 'Floral Maxi Dress', price: 35.00, type: 'top', color: 'bg-rose-200' }, 
       { id: 'f_c_2', name: 'Straw Sun Hat', price: 18.99, type: 'access', color: 'bg-yellow-100' },
-      { id: 'f_c_3', name: 'Strappy Sandals', price: 25.00, type: 'shoes', color: 'bg-amber-100' },
+      { id: 'f_c_3', name: 'Strappy Sandals', price: 25.00, type: 'shoes', color: 'bg-amber-200' },
     ],
     formal: [
-      { id: 'f_f_1', name: 'Cocktail Midi Dress', price: 65.00, type: 'full', color: 'bg-emerald-800 text-white' },
-      { id: 'f_f_2', name: 'Statement Clutch', price: 30.00, type: 'access', color: 'bg-gray-900 text-white' },
-      { id: 'f_f_3', name: 'Block Heels', price: 45.00, type: 'shoes', color: 'bg-black text-white' },
+      { id: 'f_f_1', name: 'Cocktail Midi Dress', price: 65.00, type: 'top', color: 'bg-emerald-600' },
+      { id: 'f_f_2', name: 'Statement Clutch', price: 30.00, type: 'access', color: 'bg-gray-900' },
+      { id: 'f_f_3', name: 'Block Heels', price: 45.00, type: 'shoes', color: 'bg-black' },
     ],
     active: [
-      { id: 'f_a_1', name: 'Tankini Top', price: 28.00, type: 'top', color: 'bg-pink-200' },
-      { id: 'f_a_2', name: 'High Waist Bottoms', price: 24.00, type: 'bottom', color: 'bg-pink-300' },
+      { id: 'f_a_1', name: 'Tankini Top', price: 28.00, type: 'top', color: 'bg-pink-300' },
+      { id: 'f_a_2', name: 'High Waist Bottoms', price: 24.00, type: 'bottom', color: 'bg-pink-400' },
       { id: 'f_a_3', name: 'Cover-up Sarong', price: 15.00, type: 'access', color: 'bg-white border-dashed' },
     ]
   }
 };
 
 const ESSENTIALS_DATA = [
-  { id: 'e1', name: 'Universal Travel Adapter', price: 19.99, category: 'Tech' },
-  { id: 'e2', name: 'Power Bank (10000mAh)', price: 29.99, category: 'Tech' },
-  { id: 'e3', name: 'Packing Cubes (Set of 4)', price: 24.99, category: 'Gear' },
-  { id: 'e4', name: 'Waterproof Phone Pouch', price: 9.99, category: 'Gear' },
-  { id: 'e5', name: 'Travel Insurance Docs', price: 0, category: 'Docs' },
-  { id: 'e6', name: 'Reef Safe Sunscreen', price: 14.50, category: 'Toiletries' },
-  { id: 'e7', name: 'Motion Sickness Bands', price: 12.00, category: 'Health' },
-  { id: 'e8', name: 'Noise Cancelling Headphones', price: 150.00, category: 'Tech' },
+  { id: 'e1', name: 'Univ. Adapter', price: 19.99, category: 'Tech', icon: <Smartphone size={20}/> },
+  { id: 'e2', name: 'Power Bank', price: 29.99, category: 'Tech', icon: <Watch size={20}/> },
+  { id: 'e3', name: 'Packing Cubes', price: 24.99, category: 'Gear', icon: <Luggage size={20}/> },
+  { id: 'e4', name: 'Waterproof Pouch', price: 9.99, category: 'Gear', icon: <Umbrella size={20}/> },
+  { id: 'e6', name: 'Reef Safe Sunscreen', price: 14.50, category: 'Toiletries', icon: <Sun size={20}/> },
+  { id: 'e7', name: 'Motion Sickness', price: 12.00, category: 'Health', icon: <Anchor size={20}/> },
 ];
 // --- COMPONENTS ---
 
-const Header = ({ view, setView, myBagCount, isMenuOpen, setIsMenuOpen }) => (
-  <nav className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+const Header = ({ view, setView, myBagCount }) => (
+  <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-100 transition-all">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
-        <div className="flex items-center cursor-pointer transform hover:scale-105 transition-transform" onClick={() => setView('home')}>
-          <img 
-            src="https://cruisytravel.com/wp-content/uploads/2024/01/cropped-20240120_025955_0000.png" 
-            alt="Cruisy Travel" 
-            className="h-10 w-auto mr-3 md:h-12"
-          />
-          <span className="font-header text-xl md:text-2xl text-brand hidden sm:block tracking-wide">CRUISY TRAVEL</span>
+        
+        {/* LOGO AREA */}
+        <div 
+          className="flex items-center cursor-pointer group" 
+          onClick={() => setView('home')}
+        >
+          <div className="bg-brand/10 p-2 rounded-full mr-3 group-hover:bg-brand/20 transition-colors">
+             <Anchor className="text-brand" size={28} />
+          </div>
+          <span className="font-header text-2xl text-gray-800 tracking-wide group-hover:text-brand transition-colors">
+            CRUISY <span className="text-brand">TRIP KIT</span>
+          </span>
         </div>
         
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-8">
+        {/* NAVIGATION PILLS */}
+        <div className="flex items-center space-x-2 md:space-x-6">
           <button 
             onClick={() => setView('planner')} 
-            className={`font-body font-medium transition-colors ${view === 'planner' ? 'text-brand underline underline-offset-4' : 'text-gray-600 hover:text-brand'}`}
+            className={`hidden md:flex px-4 py-2 rounded-full text-sm font-bold transition-all ${view === 'planner' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'}`}
           >
-            Essential Lists
+            Essentials
           </button>
           <button 
             onClick={() => setView('outfit')} 
-            className={`font-body font-medium transition-colors ${view === 'outfit' ? 'text-brand underline underline-offset-4' : 'text-gray-600 hover:text-brand'}`}
+            className={`hidden md:flex px-4 py-2 rounded-full text-sm font-bold transition-all ${view === 'outfit' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'}`}
           >
-            Style Mixer
+            Visualizer
           </button>
+          
+          {/* CART / BAG - PRIMARY ACTION */}
           <button 
             onClick={() => setView('mybag')} 
-            className="flex items-center bg-brand text-white px-5 py-2 rounded-full font-body font-medium shadow-md hover:bg-cyan-600 transition-all transform hover:-translate-y-0.5"
+            className="flex items-center bg-brand text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-brand/30 hover:shadow-brand/50 hover:-translate-y-0.5 transition-all active:scale-95"
           >
-            <ShoppingBag size={18} className="mr-2" />
-            My Bag ({myBagCount})
-          </button>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600 p-2">
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            <ShoppingBag size={20} className="mr-2" />
+            <span className="hidden sm:inline">My Bag</span>
+            {myBagCount > 0 && (
+               <span className="ml-2 bg-white text-brand text-xs py-0.5 px-2 rounded-full font-extrabold">
+                 {myBagCount}
+               </span>
+            )}
           </button>
         </div>
       </div>
     </div>
-
-    {/* Mobile Nav */}
-    {isMenuOpen && (
-      <div className="md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg z-50">
-        <div className="px-4 pt-2 pb-6 space-y-2">
-          <button onClick={() => {setView('planner'); setIsMenuOpen(false)}} className="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:text-brand hover:bg-cyan-50 rounded-lg">Essential Lists</button>
-          <button onClick={() => {setView('outfit'); setIsMenuOpen(false)}} className="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:text-brand hover:bg-cyan-50 rounded-lg">Style Mixer</button>
-          <button onClick={() => {setView('mybag'); setIsMenuOpen(false)}} className="block w-full text-left px-4 py-3 text-base font-medium text-brand font-bold bg-cyan-50 rounded-lg flex justify-between">
-            <span>My Bag</span>
-            <span className="bg-brand text-white px-2 py-0.5 rounded-full text-sm">{myBagCount}</span>
-          </button>
-        </div>
-      </div>
-    )}
   </nav>
 );
 
 const Hero = ({ setView }) => (
-  <div className="relative bg-white overflow-hidden flex items-center justify-center py-20 lg:py-32">
-    {/* Subtle Background Pattern */}
-    <div className="absolute inset-0 bg-white">
-      <div className="absolute inset-0 bg-[radial-gradient(#34a4b8_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05]"></div>
-    </div>
-
-    <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-cyan-50 text-brand text-sm font-bold mb-8 border border-cyan-100 shadow-sm">
-        <Compass size={16} className="mr-2"/> Cruisy Trip Kit
+  <div className="relative overflow-hidden bg-gradient-to-b from-cyan-50/50 to-white py-24">
+    <div className="max-w-5xl mx-auto text-center px-4">
+      <div className="inline-flex items-center bg-white border border-cyan-100 rounded-full px-4 py-1.5 mb-8 shadow-sm">
+         <Sun size={16} className="text-orange-400 mr-2 animate-spin-slow" />
+         <span className="text-sm font-bold text-gray-600 uppercase tracking-widest">The Ultimate Packing Tool</span>
       </div>
       
-      <h1 className="text-5xl md:text-7xl font-header tracking-tight text-gray-900 mb-6">
-        Pack Smart.<br />
-        <span className="text-brand">Travel Cruisy.</span>
+      <h1 className="text-6xl md:text-8xl font-header text-gray-900 mb-6 leading-tight drop-shadow-sm">
+        Pack for <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">Adventure</span>
       </h1>
       
-      <p className="mt-4 text-xl text-gray-500 font-body max-w-2xl mx-auto leading-relaxed">
-        Your ultimate travel companion. Curate your perfect packing list, visualize your outfits, and get ready for your next adventure.
+      <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mb-10 leading-relaxed">
+        Don't guess what to bring. Use our 3D-style visualizer and smart lists to build the perfect kit for your next cruise.
       </p>
       
-      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
         <button 
           onClick={() => setView('planner')} 
-          className="flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl text-white bg-brand hover:bg-cyan-600 shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1 font-body"
+          className="flex items-center justify-center px-8 py-4 bg-brand text-white rounded-2xl font-bold text-lg shadow-xl shadow-brand/20 hover:bg-cyan-600 hover:scale-105 transition-all"
         >
-          <CheckSquare className="mr-2" size={20}/>
-          Start List
+          <CheckSquare className="mr-2" /> Build Checklist
         </button>
         <button 
           onClick={() => setView('outfit')} 
-          className="flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-brand hover:text-brand transition-all font-body"
+          className="flex items-center justify-center px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold text-lg hover:border-brand hover:text-brand hover:bg-cyan-50 transition-all"
         >
-          <Shirt className="mr-2" size={20}/>
-          Style Mixer
+          <User className="mr-2" /> Try Visualizer
         </button>
-      </div>
-
-      {/* Trust/Feature Icons */}
-      <div className="mt-16 pt-8 border-t border-gray-100 grid grid-cols-3 gap-8 text-gray-400">
-        <div className="flex flex-col items-center">
-          <Sun size={24} className="mb-2 text-brand opacity-60"/>
-          <span className="text-xs uppercase tracking-widest font-semibold">Seasonal</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <Anchor size={24} className="mb-2 text-brand opacity-60"/>
-          <span className="text-xs uppercase tracking-widest font-semibold">Cruise Ready</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <ShoppingBag size={24} className="mb-2 text-brand opacity-60"/>
-          <span className="text-xs uppercase tracking-widest font-semibold">Shop Amazon</span>
-        </div>
       </div>
     </div>
   </div>
 );
-
 const OutfitMixer = ({ 
   gender, setGender, bodyType, setBodyType, 
   outfitCategory, shuffleOutfit, currentOutfitSet, addToBag 
 }) => {
-  const getBodyWidth = () => {
-    if (bodyType === 'petite') return 'w-32';
-    if (bodyType === 'plus') return 'w-64';
-    return 'w-48'; 
-  };
+  
+  // Helper to find current items by type for the mannequin
+  const currentClothing = useMemo(() => {
+    return {
+      top: currentOutfitSet.find(i => i.type === 'top' || i.type === 'full'),
+      bottom: currentOutfitSet.find(i => i.type === 'bottom'),
+      shoes: currentOutfitSet.find(i => i.type === 'shoes'),
+    };
+  }, [currentOutfitSet]);
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-header text-gray-900">Virtual Style Mixer</h2>
-          <p className="mt-2 text-gray-600 font-body">Visualize your look before you book.</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* LEFT: CONTROLS */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="font-header text-lg mb-4 text-gray-800 flex items-center">
-                <User size={20} className="mr-2 text-brand"/> Model Settings
-              </h3>
-              <div className="mb-6">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-body">Gender</label>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  {['female', 'male'].map((g) => (
-                    <button key={g} onClick={() => setGender(g)} className={`flex-1 capitalize py-2 rounded-md text-sm font-medium transition-all ${gender === g ? 'bg-white text-brand shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-2">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-body">Body Type</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {['petite', 'average', 'plus'].map((b) => (
-                    <button key={b} onClick={() => setBodyType(b)} className={`capitalize py-2 px-1 border rounded-md text-xs font-medium transition-all ${bodyType === b ? 'border-brand bg-cyan-50 text-brand' : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-white'}`}>
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-               <h3 className="font-header text-lg mb-4 text-gray-800 flex items-center">
-                <Shirt size={20} className="mr-2 text-brand"/> Wardrobe
-              </h3>
-               <button onClick={shuffleOutfit} className="w-full flex items-center justify-center bg-gray-900 text-white py-4 rounded-xl hover:bg-gray-800 transition-colors shadow-lg transform active:scale-95 font-bold">
-                 <RotateCcw size={18} className="mr-2" /> Shuffle Outfit
-               </button>
-               <p className="text-center text-xs text-gray-400 mt-3">Randomizes between Casual, Formal, and Active</p>
-            </div>
-          </div>
-
-          <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl shadow-xl relative overflow-hidden flex flex-col items-center justify-center p-8 min-h-[600px]">
-            <div className="absolute top-6 right-6 z-10 bg-white px-5 py-2 rounded-full shadow-sm border border-gray-100 text-sm font-bold uppercase tracking-wide text-brand flex items-center">
-              <div className="w-2 h-2 rounded-full bg-brand mr-2 animate-pulse"></div>
-              {outfitCategory}
-            </div>
-
-            <div className="relative z-10 flex flex-col items-center transform scale-90 md:scale-100 transition-transform duration-500">
-              <div className="w-24 h-28 bg-stone-200 rounded-[2rem] mb-2 shadow-inner flex items-center justify-center">
-                <Smile className="text-stone-300 opacity-50" size={32} />
-              </div>
-              <div className="w-12 h-6 bg-stone-200 -mt-2 mb-1"></div>
-              <div className={`transition-all duration-500 ease-in-out ${getBodyWidth()} min-h-[16rem] bg-stone-100 rounded-3xl relative shadow-lg flex flex-col items-center justify-start p-4 border border-stone-200`}>
-                 <div className="w-full space-y-2 mt-2">
-                   {currentOutfitSet.map((item) => (
-                     <div key={item.id} className={`${item.color || 'bg-white'} p-4 rounded-xl shadow-sm border border-black/5 flex items-center justify-between transform transition-all hover:scale-105 cursor-pointer group relative overflow-hidden`}>
-                        <div className="flex items-center relative z-10">
-                          <div className="bg-white/50 p-2 rounded-full mr-3 text-gray-800">
-                            {item.type === 'shoes' ? <Anchor size={16}/> : <Shirt size={16} />}
-                          </div>
-                          <div className="text-left">
-                            <p className="text-sm font-bold opacity-90">{item.name}</p>
-                            <p className="text-xs opacity-75">${item.price.toFixed(2)}</p>
-                          </div>
-                        </div>
-                        <button onClick={(e) => { e.stopPropagation(); addToBag(item); }} className="bg-white text-brand p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-brand hover:text-white" title="Add to Bag">
-                          <Plus size={18} />
-                        </button>
-                     </div>
+             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 className="font-header text-xl text-gray-800 mb-6">Visualizer Settings</h3>
+                
+                {/* Gender Toggle */}
+                <div className="flex bg-gray-100 p-1.5 rounded-xl mb-6">
+                   {['female', 'male'].map(g => (
+                     <button
+                       key={g}
+                       onClick={() => setGender(g)}
+                       className={`flex-1 py-3 rounded-lg text-sm font-bold capitalize transition-all ${gender === g ? 'bg-white text-brand shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                     >
+                       {g}
+                     </button>
                    ))}
-                 </div>
-              </div>
-              <div className="flex space-x-3 -mt-4 pt-4">
-                <div className={`w-14 h-48 bg-stone-200 rounded-b-full shadow-inner ${bodyType === 'plus' ? 'w-20' : ''}`}></div>
-                <div className={`w-14 h-48 bg-stone-200 rounded-b-full shadow-inner ${bodyType === 'plus' ? 'w-20' : ''}`}></div>
-              </div>
-            </div>
-            
-            <div className="absolute bottom-8 right-8 z-10">
-              <button onClick={() => currentOutfitSet.forEach(i => addToBag(i))} className="bg-brand text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:bg-cyan-600 transition-all flex items-center">
-                Add All <Plus size={18} className="ml-2" />
-              </button>
-            </div>
+                </div>
+
+                {/* Body Type */}
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Body Shape</label>
+                <div className="grid grid-cols-3 gap-2 mb-8">
+                   {['petite', 'average', 'plus'].map(b => (
+                     <button
+                       key={b}
+                       onClick={() => setBodyType(b)}
+                       className={`py-2 rounded-lg text-xs font-bold capitalize border-2 transition-all ${bodyType === b ? 'border-brand bg-cyan-50 text-brand' : 'border-transparent bg-gray-50 text-gray-500'}`}
+                     >
+                       {b}
+                     </button>
+                   ))}
+                </div>
+
+                <button 
+                  onClick={shuffleOutfit}
+                  className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold flex items-center justify-center hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+                >
+                  <RotateCcw className="mr-2" size={18}/> Mix New Outfit
+                </button>
+             </div>
+
+             {/* Item List for Mobile/Details */}
+             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h4 className="font-header text-md text-gray-800 mb-4">Current Look Details</h4>
+                <div className="space-y-3">
+                  {currentOutfitSet.map(item => (
+                    <div key={item.id} className="flex justify-between items-center text-sm p-2 hover:bg-gray-50 rounded-lg group cursor-pointer" onClick={() => addToBag(item)}>
+                       <span className="text-gray-600">{item.name}</span>
+                       <Plus size={16} className="text-brand opacity-0 group-hover:opacity-100"/>
+                    </div>
+                  ))}
+                </div>
+             </div>
           </div>
+
+          {/* RIGHT: MANNEQUIN STAGE */}
+          <div className="lg:col-span-8 bg-white rounded-[3rem] shadow-2xl shadow-gray-200/50 min-h-[600px] flex flex-col items-center justify-center relative overflow-hidden border border-gray-100">
+             
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-50 via-white to-white"></div>
+             
+             {/* Category Badge */}
+             <div className="absolute top-8 right-8 z-10 bg-white/80 backdrop-blur border border-gray-200 px-4 py-2 rounded-full font-bold text-sm text-gray-600 uppercase tracking-wider shadow-sm">
+                {outfitCategory} Collection
+             </div>
+
+             {/* THE SVG MANNEQUIN */}
+             <div className="relative z-10 transform scale-110 lg:scale-125 transition-transform">
+                <MannequinSVG 
+                  gender={gender} 
+                  bodyType={bodyType} 
+                  clothing={currentClothing}
+                />
+             </div>
+
+             {/* Add All Button */}
+             <div className="absolute bottom-10 z-20">
+                <button 
+                  onClick={() => currentOutfitSet.forEach(i => addToBag(i))}
+                  className="flex items-center px-8 py-3 bg-brand text-white rounded-full font-bold shadow-xl hover:bg-cyan-600 hover:scale-105 transition-all"
+                >
+                  <Plus size={20} className="mr-2"/> Add Outfit to Bag
+                </button>
+             </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -281,136 +316,96 @@ const OutfitMixer = ({
 };
 
 const Planner = ({ addToBag }) => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl font-header text-gray-900">Essentials & Gear</h2>
-      <p className="mt-2 text-gray-600 font-body">Cruisy approved packing lists.</p>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-header text-gray-900 mb-4">The Essentials</h2>
+      <p className="text-lg text-gray-500">Tap the <Plus size={16} className="inline text-brand"/> to add items to your trip kit.</p>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-        <div className="bg-gray-800 p-5 flex justify-between items-center">
-          <h3 className="text-white font-header text-lg">Tech & Gadgets</h3>
-          <div className="bg-gray-700 p-2 rounded-lg"><Camera className="text-brand" size={20} /></div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Dynamic Cards based on Categories */}
+      {['Tech', 'Gear', 'Health'].map(cat => (
+        <div key={cat} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="bg-gray-50/50 p-6 border-b border-gray-100">
+             <h3 className="font-header text-xl text-gray-800">{cat}</h3>
+          </div>
+          <div className="p-4 space-y-2">
+             {ESSENTIALS_DATA.filter(i => (cat === 'Health' ? ['Health', 'Toiletries'].includes(i.category) : i.category === cat)).map(item => (
+               <div key={item.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-50/50 group transition-colors">
+                  <div className="flex items-center">
+                    <div className="bg-white p-2 rounded-lg text-gray-400 group-hover:text-brand shadow-sm mr-3 transition-colors">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-700 text-sm">{item.name}</p>
+                      <p className="text-xs text-gray-400">${item.price}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => addToBag(item)} className="bg-gray-100 text-gray-400 p-2 rounded-full hover:bg-brand hover:text-white transition-all">
+                    <Plus size={18} />
+                  </button>
+               </div>
+             ))}
+          </div>
         </div>
-        <div className="p-4 space-y-1 h-80 overflow-y-auto custom-scroll">
-          {ESSENTIALS_DATA.filter(i => i.category === 'Tech').map(item => (
-            <div key={item.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg group transition-colors border-b border-gray-50 last:border-0">
-              <div>
-                <p className="font-medium text-gray-800 text-sm">{item.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">${item.price}</p>
-              </div>
-              <button onClick={() => addToBag(item)} className="text-gray-300 hover:text-brand hover:bg-cyan-50 p-2 rounded-full transition-all"><Plus size={20} /></button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-        <div className="bg-gray-800 p-5 flex justify-between items-center">
-          <h3 className="text-white font-header text-lg">Health & Sun</h3>
-          <div className="bg-gray-700 p-2 rounded-lg"><Sun className="text-brand" size={20} /></div>
-        </div>
-        <div className="p-4 space-y-1 h-80 overflow-y-auto custom-scroll">
-          {ESSENTIALS_DATA.filter(i => ['Health', 'Toiletries'].includes(i.category)).map(item => (
-            <div key={item.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg group transition-colors border-b border-gray-50 last:border-0">
-              <div>
-                <p className="font-medium text-gray-800 text-sm">{item.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">${item.price}</p>
-              </div>
-              <button onClick={() => addToBag(item)} className="text-gray-300 hover:text-brand hover:bg-cyan-50 p-2 rounded-full transition-all"><Plus size={20} /></button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-        <div className="bg-gray-800 p-5 flex justify-between items-center">
-          <h3 className="text-white font-header text-lg">Cruise Gear</h3>
-          <div className="bg-gray-700 p-2 rounded-lg"><Anchor className="text-brand" size={20} /></div>
-        </div>
-        <div className="p-4 space-y-1 h-80 overflow-y-auto custom-scroll">
-          {ESSENTIALS_DATA.filter(i => i.category === 'Gear').map(item => (
-            <div key={item.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg group transition-colors border-b border-gray-50 last:border-0">
-              <div>
-                <p className="font-medium text-gray-800 text-sm">{item.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">${item.price}</p>
-              </div>
-              <button onClick={() => addToBag(item)} className="text-gray-300 hover:text-brand hover:bg-cyan-50 p-2 rounded-full transition-all"><Plus size={20} /></button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-    
-    <div className="mt-12 bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-sm">
-       <h3 className="text-2xl font-header text-gray-800 mb-2">Something missing?</h3>
-       <p className="text-gray-600 mb-6 max-w-lg mx-auto">We connect directly to Amazon's massive inventory so you can find exactly what you need.</p>
-       <button onClick={() => window.open('https://www.amazon.com/travel', '_blank')} className="bg-transparent border-2 border-brand text-brand font-bold py-3 px-8 rounded-full hover:bg-brand hover:text-white transition-all flex items-center mx-auto">
-         Browse Amazon Travel <ExternalLink size={16} className="ml-2"/>
-       </button>
+      ))}
     </div>
   </div>
 );
+
 const MyBag = ({ myBag, setMyBag, removeFromBag, toggleCheck, estimatedTotal, handleBuy, setView }) => {
-  if (myBag.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 bg-slate-50">
-        <div className="bg-white p-6 rounded-full mb-4 shadow-sm"><ShoppingBag size={48} className="text-gray-300" /></div>
-        <h2 className="text-2xl font-header text-gray-900 mb-2">Your bag is empty</h2>
-        <p className="text-gray-500 mb-6 max-w-sm">Start by visiting the Essentials Planner or the Style Mixer to add items.</p>
-        <button onClick={() => setView('outfit')} className="text-brand font-bold hover:underline flex items-center">
-          Go to Style Mixer <ArrowRight size={16} className="ml-1"/>
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-4 gap-4">
-        <div>
-          <h2 className="text-3xl font-header text-gray-900">My Packing Bag</h2>
-          <p className="text-gray-600 mt-1">{myBag.length} Items Selected</p>
-        </div>
-        <div className="text-right bg-white p-4 rounded-xl border border-gray-100 shadow-sm w-full md:w-auto">
-          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Estimated Total</p>
-          <p className="text-3xl font-bold text-brand">${estimatedTotal}</p>
-        </div>
+    <div className="max-w-3xl mx-auto px-4 py-12 min-h-screen">
+      <div className="flex items-center justify-between mb-8">
+         <h2 className="text-3xl font-header text-gray-900">Your Trip Kit</h2>
+         <button onClick={() => setView('planner')} className="text-sm font-bold text-brand hover:underline">
+           + Add More Items
+         </button>
       </div>
 
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
-        <div className="max-h-[600px] overflow-y-auto custom-scroll">
-          <ul className="divide-y divide-gray-100">
-            {myBag.map((item) => (
-              <li key={item.id} className={`p-4 md:p-6 transition-colors ${item.checked ? 'bg-gray-50/80' : 'bg-white'}`}>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center flex-1 min-w-[200px]">
-                    <button onClick={() => toggleCheck(item.id)} className="mr-4 text-gray-300 hover:text-brand focus:outline-none transition-colors">
-                      {item.checked ? <CheckSquare className="text-brand" size={24} /> : <Square size={24} />}
-                    </button>
-                    <div>
-                      <h4 className={`text-lg font-medium ${item.checked ? 'line-through text-gray-400' : 'text-gray-900'}`}>{item.name}</h4>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-50 text-brand mt-1">{item.category || item.type || 'General'}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
-                    <span className="font-bold text-gray-700 w-20 text-right">${item.price.toFixed(2)}</span>
-                    <button onClick={() => handleBuy(item.name)} className="flex items-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-colors">
-                      Buy <ExternalLink size={14} className="ml-2" />
-                    </button>
-                    <button onClick={() => removeFromBag(item.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-lg"><Trash2 size={18} /></button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+      {myBag.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+           <ShoppingBag size={64} className="mx-auto text-gray-200 mb-4"/>
+           <p className="text-gray-500 text-lg">Your bag is empty.</p>
         </div>
-      </div>
-      <div className="mt-8 flex justify-end space-x-4">
-         <button onClick={() => setMyBag([])} className="px-6 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 font-medium transition-colors">Clear List</button>
-         <button onClick={() => window.print()} className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium shadow-lg hover:shadow-xl transition-all">Print Checklist</button>
-      </div>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
+           <div className="p-6 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+              <span className="font-bold text-gray-500 uppercase tracking-wider text-xs">{myBag.length} Items</span>
+              <span className="font-header text-2xl text-gray-900">${estimatedTotal}</span>
+           </div>
+           
+           <div className="divide-y divide-gray-50">
+             {myBag.map(item => (
+               <div key={item.id} className="p-4 flex items-center justify-between hover:bg-cyan-50/30 transition-colors">
+                  <div className="flex items-center">
+                     <button onClick={() => toggleCheck(item.id)} className={`mr-4 ${item.checked ? 'text-brand' : 'text-gray-300 hover:text-gray-400'}`}>
+                       {item.checked ? <CheckSquare size={24}/> : <Square size={24}/>}
+                     </button>
+                     <span className={`font-medium ${item.checked ? 'line-through text-gray-300' : 'text-gray-700'}`}>
+                       {item.name}
+                     </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <button onClick={() => handleBuy(item.name)} className="text-xs font-bold bg-brand text-white px-3 py-1.5 rounded-lg hover:bg-cyan-600 transition-colors">
+                        Buy on Amazon
+                     </button>
+                     <button onClick={() => removeFromBag(item.id)} className="p-2 text-gray-300 hover:text-red-400 transition-colors">
+                        <Trash2 size={18}/>
+                     </button>
+                  </div>
+               </div>
+             ))}
+           </div>
+           
+           <div className="p-6 bg-gray-50 flex justify-end gap-3">
+              <button onClick={() => setMyBag([])} className="text-sm font-bold text-gray-500 hover:text-red-500 px-4">Clear All</button>
+              <button onClick={() => window.print()} className="bg-gray-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-gray-800 shadow-lg">
+                 Print / PDF
+              </button>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -422,10 +417,8 @@ export default function App() {
   const [bodyType, setBodyType] = useState('average');
   const [myBag, setMyBag] = useState([]);
   const [outfitCategory, setOutfitCategory] = useState('casual');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const addToBag = (item) => {
-    // Generate unique id for bag to allow multiples
     const bagItem = { ...item, id: item.id + '_' + Date.now(), checked: false };
     setMyBag([...myBag, bagItem]);
   };
@@ -442,13 +435,12 @@ export default function App() {
   };
 
   const handleBuy = (itemName) => {
-    // Replace with your Affiliate Tag logic
     window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=YOUR_TAG_HERE`, '_blank');
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-body text-gray-800 flex flex-col">
-      <Header view={view} setView={setView} myBagCount={myBag.length} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+    <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
+      <Header view={view} setView={setView} myBagCount={myBag.length} />
       <div className="flex-grow">
         {view === 'home' && <Hero setView={setView} />}
         {view === 'planner' && <Planner addToBag={addToBag} />}
@@ -468,20 +460,9 @@ export default function App() {
           />
         )}
       </div>
-      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-          <div className="mb-6 md:mb-0">
-            <span className="font-header text-2xl tracking-wider text-white">CRUISY TRAVEL</span>
-            <p className="mt-2 text-gray-400 text-sm max-w-xs">Your all-in-one cruise companion.</p>
-          </div>
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 text-gray-400 text-sm">
-             <span className="opacity-50">&copy; 2024 Cruisy Travel.</span>
-          </div>
-        </div>
+      <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">
+         &copy; 2024 Cruisy Travel. All rights reserved.
       </footer>
     </div>
   );
 }
-
-                
-   
