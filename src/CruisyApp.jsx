@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
   X, Plus, ArrowRight, Smile, User, Map, Compass, Watch, Smartphone,
   Umbrella, Coffee, Plane, Mountain, Snowflake, Utensils,
   Star, Heart, Cloud, Music, Tent, Trees, Building, Download, Share2, Type,
-  Maximize2, Facebook, Mail, Twitter, Image as ImageIcon
+  Maximize2, Mail, Image as ImageIcon, ArrowLeft, Instagram, Pin
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -16,11 +16,11 @@ const THEMES = {
   'Cruise': {
     bg: 'bg-blue-50',
     text: 'text-teal-900',
-    // Graphic: Anchor & Waves
+    border: 'border-[12px] border-teal-200 border-double',
     decoration: (
       <>
-        <div className="absolute top-0 right-0 p-4 opacity-10 text-teal-800"><Anchor size={120} /></div>
-        <div className="absolute bottom-0 left-0 w-full h-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+        <div className="absolute top-2 right-2 p-4 opacity-10 text-teal-800"><Anchor size={120} /></div>
+        <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-teal-100/50 to-transparent"></div>
       </>
     ),
     vibes: 'Tropical Beach'
@@ -28,19 +28,19 @@ const THEMES = {
   'Tropical': {
     bg: 'bg-orange-50',
     text: 'text-orange-900',
-    // Graphic: Sun & Palm feel
+    border: 'border-[16px] border-orange-200 border-dashed',
     decoration: (
       <>
         <div className="absolute -top-10 -right-10 text-yellow-400 opacity-20"><Sun size={200} /></div>
-        <div className="absolute bottom-4 right-4 text-orange-300 opacity-20"><Umbrella size={100} /></div>
+        <div className="absolute bottom-4 right-4 text-orange-300 opacity-30"><Umbrella size={80} /></div>
       </>
     ),
     vibes: 'Tropical Beach'
   },
   'Ski Trip': {
-    bg: 'bg-slate-100',
+    bg: 'bg-slate-50',
     text: 'text-slate-800',
-    // Graphic: Snowflakes
+    border: 'border-[10px] border-blue-100 rounded-none',
     decoration: (
       <>
         <div className="absolute top-4 left-4 text-blue-200 opacity-40"><Snowflake size={80} /></div>
@@ -52,7 +52,7 @@ const THEMES = {
   'City Break': {
     bg: 'bg-gray-100',
     text: 'text-gray-900',
-    // Graphic: Buildings / Map
+    border: 'border-[8px] border-gray-800',
     decoration: (
       <>
         <div className="absolute bottom-0 w-full h-32 opacity-10 pointer-events-none bg-gradient-to-t from-gray-400 to-transparent"></div>
@@ -64,7 +64,7 @@ const THEMES = {
   'Desert': {
     bg: 'bg-amber-50',
     text: 'text-amber-900',
-    // Graphic: Sun & Dunes
+    border: 'border-[10px] border-amber-300 border-dotted',
     decoration: (
       <>
         <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-200 to-transparent"></div>
@@ -76,18 +76,24 @@ const THEMES = {
 };
 
 const STICKERS = [
+  // Travel Emojis
   { id: 's1', content: '✈️', type: 'emoji' },
   { id: 's2', content: '🌴', type: 'emoji' },
-  { id: 's3', content: '🥥', type: 'emoji' },
   { id: 's4', content: '📸', type: 'emoji' },
   { id: 's5', content: '👙', type: 'emoji' },
   { id: 's6', content: '🕶️', type: 'emoji' },
-  { id: 's7', content: '❄️', type: 'emoji' },
-  { id: 's8', content: '🏔️', type: 'emoji' },
   { id: 's9', content: '🛳️', type: 'emoji' },
   { id: 's10', content: '⚓', type: 'emoji' },
-  { id: 's11', content: 'Passport Ready', type: 'text' },
-  { id: 's12', content: 'Vacay Mode', type: 'text' },
+  // Holidays
+  { id: 'h1', content: '🎄', type: 'emoji' },
+  { id: 'h2', content: '🎅', type: 'emoji' },
+  { id: 'h3', content: '🦃', type: 'emoji' },
+  { id: 'h4', content: '🎃', type: 'emoji' },
+  { id: 'h5', content: '🎆', type: 'emoji' },
+  // Text
+  { id: 't1', content: 'Passport Ready', type: 'text' },
+  { id: 't2', content: 'Vacay Mode', type: 'text' },
+  { id: 't3', content: 'Out of Office', type: 'text' },
 ];
 
 const SCENIC_PHOTOS = [
@@ -97,6 +103,8 @@ const SCENIC_PHOTOS = [
   { id: 'p4', url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=80', name: 'Blue Lake' },
   { id: 'p5', url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80', name: 'Desert Road' },
   { id: 'p6', url: 'https://images.unsplash.com/photo-1504198458649-3128b932f49e?auto=format&fit=crop&w=400&q=80', name: 'Cozy Cabin' },
+  { id: 'p7', url: 'https://images.unsplash.com/photo-1512951670161-b3c66e49872d?auto=format&fit=crop&w=400&q=80', name: 'Poolside' },
+  { id: 'p8', url: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=400&q=80', name: 'Beach Walk' },
 ];
 
 const TRAVEL_VIBES = {
@@ -107,7 +115,7 @@ const TRAVEL_VIBES = {
     { id: 'v_air_4', name: 'Neck Pillow', price: 25.00, img: 'https://plus.unsplash.com/premium_photo-1675807914389-72c67dc39d42?auto=format&fit=crop&w=300&q=80' },
   ],
   'Tropical Beach': [
-    { id: 'v_beach_1', name: 'Linen Cover-up', price: 35.00, img: 'https://images.unsplash.com/photo-1569388330292-7a6a84165c6c?auto=format&fit=crop&w=300&q=80' },
+    { id: 'v_beach_1', name: 'Linen Cover-up', price: 35.00, img: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=300&q=80' },
     { id: 'v_beach_2', name: 'Quick-Dry Swimwear', price: 28.00, img: 'https://images.unsplash.com/photo-1566807810030-31cb3b27ea17?auto=format&fit=crop&w=300&q=80' },
     { id: 'v_beach_3', name: 'Waterproof Sandals', price: 30.00, img: 'https://images.unsplash.com/photo-1603487742131-4160d6986ba2?auto=format&fit=crop&w=300&q=80' },
     { id: 'v_beach_4', name: 'Polarized Shades', price: 15.99, img: 'https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=300&q=80' },
@@ -139,6 +147,7 @@ const Header = ({ view, setView, myBagCount }) => (
   <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
+        
         <div className="flex items-center cursor-pointer group" onClick={() => setView('home')}>
           <div className="bg-brand/10 p-2.5 rounded-xl mr-3 group-hover:bg-brand/20 transition-colors">
              <Compass className="text-brand" size={26} />
@@ -174,12 +183,12 @@ const Hero = ({ setView }) => (
       </div>
       
       <h1 className="text-6xl md:text-8xl font-header text-gray-900 mb-8 leading-tight tracking-tight">
-        Curate Your <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">Perfect Trip.</span>
+        Plan Your <br/>
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">Next Adventure.</span>
       </h1>
       
       <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-        Build a visual packing board for your next adventure. Mix and match outfits, essentials, and travel gear in our new interactive studio.
+        Build a visual packing board for any trip—from holidays to summer vacations. Create your aesthetic, add essentials, and shop directly from Amazon.
       </p>
       
       <div className="flex flex-col sm:flex-row justify-center gap-4 mb-20">
@@ -191,7 +200,7 @@ const Hero = ({ setView }) => (
         </button>
       </div>
 
-      {/* INSPIRATION SLIDESHOW - Static for now */}
+      {/* INSPIRATION SLIDESHOW */}
       <div className="border-t border-gray-100 pt-12">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
         <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
@@ -210,15 +219,24 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag }) => {
-  const [currentTheme, setCurrentTheme] = useState('Cruise');
-  const [boardItems, setBoardItems] = useState([]);
+  // Load from local storage or default
+  const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem('cruisyTheme') || 'Cruise');
+  const [boardItems, setBoardItems] = useState(() => JSON.parse(localStorage.getItem('cruisyBoardItems') || '[]'));
   const [activeTab, setActiveTab] = useState('Vibes');
   
+  // Save to local storage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('cruisyTheme', currentTheme);
+    localStorage.setItem('cruisyBoardItems', JSON.stringify(boardItems));
+  }, [currentTheme, boardItems]);
+
   const theme = THEMES[currentTheme];
   const vibeItems = TRAVEL_VIBES[theme.vibes] || TRAVEL_VIBES['Airport Comfort'];
 
   const addToBoard = (item, type = 'product') => {
-    const newItem = { ...item, boardId: Date.now(), type, size: 'small' };
+    // Generate pre-set sizes for stickers to avoid manual resize errors if desired
+    const initialSize = type === 'sticker' ? 'medium' : 'small';
+    const newItem = { ...item, boardId: Date.now() + Math.random(), type, size: initialSize };
     setBoardItems([...boardItems, newItem]);
     if (type === 'product') addToBag(item);
   };
@@ -228,7 +246,6 @@ const StyleBoard = ({ addToBag }) => {
   const toggleSize = (boardId) => {
     setBoardItems(boardItems.map(item => {
       if (item.boardId === boardId) {
-        // Simple resize logic: span 1 col -> span 2 cols -> span 2x2
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
         return { ...item, size: nextSize };
       }
@@ -236,12 +253,23 @@ const StyleBoard = ({ addToBag }) => {
     }));
   };
 
+  const moveItem = (index, direction) => {
+    const newItems = [...boardItems];
+    if (direction === 'left' && index > 0) {
+      [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+    } else if (direction === 'right' && index < newItems.length - 1) {
+      [newItems[index + 1], newItems[index]] = [newItems[index], newItems[index + 1]];
+    }
+    setBoardItems(newItems);
+  };
+
   const handleShare = (platform) => {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent("Check out my Cruisy Trip Kit! ✈️");
-    if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    if (platform === 'pinterest') window.open(`https://pinterest.com/pin/create/button/?url=${url}&description=${text}`, '_blank');
     if (platform === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
     if (platform === 'mail') window.open(`mailto:?subject=My Packing Board&body=${text} ${url}`, '_blank');
+    if (platform === 'instagram') alert("To share on Instagram: \n1. Click 'Save / Print PDF' \n2. Save the image to your phone \n3. Post to Instagram!");
   };
 
   return (
@@ -251,19 +279,17 @@ const StyleBoard = ({ addToBag }) => {
           
           {/* LEFT: TOOLS */}
           <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
-             {/* THEME */}
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <h3 className="font-header text-lg text-gray-800 mb-4">1. Choose Theme</h3>
                 <div className="grid grid-cols-2 gap-3">
                    {Object.keys(THEMES).map(t => (
-                     <button key={t} onClick={() => { setCurrentTheme(t); setBoardItems([]); }} className={`flex items-center p-3 rounded-xl border-2 transition-all ${currentTheme === t ? 'border-brand bg-cyan-50 text-brand' : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>
+                     <button key={t} onClick={() => setCurrentTheme(t)} className={`flex items-center p-3 rounded-xl border-2 transition-all ${currentTheme === t ? 'border-brand bg-cyan-50 text-brand' : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>
                        <span className="mr-2">{THEMES[t].icon}</span><span className="text-sm font-bold">{t}</span>
                      </button>
                    ))}
                 </div>
              </div>
 
-             {/* PALETTE */}
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-[600px] flex flex-col">
                 <h3 className="font-header text-lg text-gray-800 mb-4">2. Add Items</h3>
                 <div className="flex border-b border-gray-100 mb-4 overflow-x-auto">
@@ -273,7 +299,6 @@ const StyleBoard = ({ addToBag }) => {
                 </div>
                 
                 <div className="overflow-y-auto flex-1 pr-2 space-y-3 custom-scroll">
-                   {/* PRODUCTS (Vibes/Essentials) */}
                    {(activeTab === 'Vibes' ? vibeItems : activeTab === 'Essentials' ? ESSENTIALS_DATA : []).map(item => (
                      <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
                         <img src={item.img} alt={item.name} className="w-12 h-12 rounded-lg object-cover mr-3 shadow-sm" />
@@ -281,8 +306,6 @@ const StyleBoard = ({ addToBag }) => {
                         <Plus size={18} className="text-gray-300 group-hover:text-brand"/>
                      </div>
                    ))}
-                   
-                   {/* PHOTOS */}
                    {activeTab === 'Photos' && (
                      <div className="grid grid-cols-2 gap-3">
                         {SCENIC_PHOTOS.map(p => (
@@ -293,8 +316,6 @@ const StyleBoard = ({ addToBag }) => {
                         ))}
                      </div>
                    )}
-
-                   {/* STICKERS */}
                    {activeTab === 'Stickers' && (
                      <div className="grid grid-cols-3 gap-3">
                        {STICKERS.map(s => (
@@ -309,7 +330,7 @@ const StyleBoard = ({ addToBag }) => {
 
           {/* RIGHT: CANVAS */}
           <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
-             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} rounded-none shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
+             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
                 
                 {/* Theme Decorations */}
                 <div className="absolute inset-0 pointer-events-none z-0">
@@ -322,7 +343,7 @@ const StyleBoard = ({ addToBag }) => {
                 </div>
 
                 <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
-                   {boardItems.map((item) => (
+                   {boardItems.map((item, index) => (
                      <div 
                         key={item.boardId} 
                         className={`relative group animate-in fade-in zoom-in duration-300 ${
@@ -332,6 +353,8 @@ const StyleBoard = ({ addToBag }) => {
                         }`}
                      >
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Left"><ArrowLeft size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Right"><ArrowRight size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
                         </div>
@@ -347,7 +370,16 @@ const StyleBoard = ({ addToBag }) => {
                           </div>
                         )}
                         {item.type === 'sticker' && <div className="flex justify-center items-center h-full transform hover:scale-110 transition-transform"><span className="text-5xl drop-shadow-md filter">{item.name}</span></div>}
-                        {item.type === 'note' && <div className="bg-yellow-200 p-3 shadow-md rotate-[-2deg] hover:rotate-0 transition-transform h-full font-handwriting"><textarea placeholder="Note..." className="w-full h-full bg-transparent border-none text-xs text-yellow-900 focus:ring-0 resize-none placeholder-yellow-700/50"/></div>}
+                        {item.type === 'note' && (
+                          <div className="bg-white p-4 shadow-lg h-full relative" style={{background: 'linear-gradient(to bottom, #fff 0%, #fff 100%), linear-gradient(to bottom, #dbeafe 1px, transparent 1px)', backgroundSize: '100% 24px'}}>
+                             <div className="absolute top-2 right-2 opacity-20"><Compass size={24} className="text-brand"/></div>
+                             <textarea 
+                               placeholder="Write here..." 
+                               className="w-full h-full bg-transparent border-none text-sm text-gray-700 focus:ring-0 resize-none leading-[24px]"
+                               style={{fontFamily: '"Patrick Hand", cursive'}}
+                             />
+                          </div>
+                        )}
                      </div>
                    ))}
                    
@@ -363,12 +395,13 @@ const StyleBoard = ({ addToBag }) => {
 
              <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button onClick={() => setBoardItems([])} className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:bg-gray-200 transition-colors">Clear</button>
-                <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"><Download size={18} className="mr-2"/> Save Board</button>
+                <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"><Download size={18} className="mr-2"/> Save / Print PDF</button>
                 
                 <div className="flex gap-2 ml-4 border-l border-gray-200 pl-4 items-center">
                    <span className="text-xs font-bold text-gray-400 mr-2">SHARE:</span>
                    <button onClick={() => handleShare('facebook')} className="p-2 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform"><Facebook size={16}/></button>
-                   <button onClick={() => handleShare('twitter')} className="p-2 bg-sky-500 text-white rounded-full hover:scale-110 transition-transform"><Twitter size={16}/></button>
+                   <button onClick={() => handleShare('pinterest')} className="p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-transform"><Pin size={16}/></button>
+                   <button onClick={() => handleShare('instagram')} className="p-2 bg-pink-600 text-white rounded-full hover:scale-110 transition-transform"><Instagram size={16}/></button>
                    <button onClick={() => handleShare('mail')} className="p-2 bg-gray-500 text-white rounded-full hover:scale-110 transition-transform"><Mail size={16}/></button>
                 </div>
              </div>
@@ -470,7 +503,7 @@ export default function App() {
         {view === 'mybag' && <MyBag myBag={myBag} setMyBag={setMyBag} removeFromBag={removeFromBag} toggleCheck={toggleCheck} estimatedTotal={estimatedTotal} handleBuy={handleBuy} setView={setView} />}
       </div>
       <div className="print:hidden">
-        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2024 Cruisy Travel.</footer>
+        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2025-2026 Cruisy Travel.</footer>
       </div>
       <style>{`
         @media print {
@@ -483,4 +516,4 @@ export default function App() {
       `}</style>
     </div>
   );
-    }
+                            }
