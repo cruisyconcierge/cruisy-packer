@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
-  X, Plus, ArrowRight, Smile, User
+  X, Plus, ArrowRight, Smile, User, Map, Compass
 } from 'lucide-react';
 
 // --- DATA & CONFIG ---
@@ -66,7 +66,7 @@ const Header = ({ view, setView, myBagCount, isMenuOpen, setIsMenuOpen }) => (
             alt="Cruisy Travel" 
             className="h-10 w-auto mr-3 md:h-12"
           />
-          <span className="font-header text-xl md:text-2xl text-gray-800 hidden sm:block">CRUISY TRAVEL</span>
+          <span className="font-header text-xl md:text-2xl text-brand hidden sm:block tracking-wide">CRUISY TRAVEL</span>
         </div>
         
         {/* Desktop Nav */}
@@ -85,7 +85,7 @@ const Header = ({ view, setView, myBagCount, isMenuOpen, setIsMenuOpen }) => (
           </button>
           <button 
             onClick={() => setView('mybag')} 
-            className="flex items-center bg-brand text-white px-5 py-2 rounded-full font-body font-medium shadow-md hover:opacity-90 transition-all transform hover:-translate-y-0.5"
+            className="flex items-center bg-brand text-white px-5 py-2 rounded-full font-body font-medium shadow-md hover:bg-cyan-600 transition-all transform hover:-translate-y-0.5"
           >
             <ShoppingBag size={18} className="mr-2" />
             My Bag ({myBagCount})
@@ -118,46 +118,57 @@ const Header = ({ view, setView, myBagCount, isMenuOpen, setIsMenuOpen }) => (
 );
 
 const Hero = ({ setView }) => (
-  <div className="relative bg-white overflow-hidden min-h-[80vh] flex items-center">
-    <div className="max-w-7xl mx-auto w-full">
-      <div className="relative z-10 pb-8 bg-white/90 backdrop-blur-sm sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 rounded-r-3xl pr-8">
-        <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-          <div className="sm:text-center lg:text-left">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-cyan-50 text-brand text-sm font-semibold mb-4">
-              <Sun size={14} className="mr-2"/> New: Summer '24 Collections
-            </div>
-            <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl font-header">
-              <span className="block xl:inline">Don't just travel.</span>{' '}
-              <span className="block text-brand xl:inline">Travel Cruisy.</span>
-            </h1>
-            <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 font-body leading-relaxed">
-              The ultimate packing companion. Build your custom list, visualize your outfits, and grab the gear you need directly from Amazon.
-            </p>
-            <div className="mt-8 sm:mt-10 sm:flex sm:justify-center lg:justify-start gap-4">
-              <button 
-                onClick={() => setView('planner')} 
-                className="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-brand hover:bg-cyan-600 md:py-4 md:text-lg font-body shadow-lg shadow-cyan-500/30 transition-all transform hover:-translate-y-1"
-              >
-                Start Packing
-              </button>
-              <button 
-                onClick={() => setView('outfit')} 
-                className="mt-3 sm:mt-0 w-full sm:w-auto flex items-center justify-center px-8 py-3 border-2 border-brand text-base font-medium rounded-lg text-brand bg-transparent hover:bg-cyan-50 md:py-4 md:text-lg font-body transition-all"
-              >
-                Try Style Mixer
-              </button>
-            </div>
-          </div>
-        </main>
-      </div>
+  <div className="relative bg-white overflow-hidden flex items-center justify-center py-20 lg:py-32">
+    {/* Subtle Background Pattern */}
+    <div className="absolute inset-0 bg-white">
+      <div className="absolute inset-0 bg-[radial-gradient(#34a4b8_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05]"></div>
     </div>
-    <div className="absolute inset-y-0 right-0 w-full lg:w-1/2 bg-cyan-50">
-      <div className="relative w-full h-full overflow-hidden">
-         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand opacity-10 blur-3xl"></div>
-         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white to-transparent"></div>
-         <div className="flex flex-col items-center justify-center h-full text-brand/20 space-y-8">
-            <Luggage size={180} />
-         </div>
+
+    <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-cyan-50 text-brand text-sm font-bold mb-8 border border-cyan-100 shadow-sm">
+        <Compass size={16} className="mr-2"/> Cruisy Trip Kit
+      </div>
+      
+      <h1 className="text-5xl md:text-7xl font-header tracking-tight text-gray-900 mb-6">
+        Pack Smart.<br />
+        <span className="text-brand">Travel Cruisy.</span>
+      </h1>
+      
+      <p className="mt-4 text-xl text-gray-500 font-body max-w-2xl mx-auto leading-relaxed">
+        Your ultimate travel companion. Curate your perfect packing list, visualize your outfits, and get ready for your next adventure.
+      </p>
+      
+      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+        <button 
+          onClick={() => setView('planner')} 
+          className="flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl text-white bg-brand hover:bg-cyan-600 shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1 font-body"
+        >
+          <CheckSquare className="mr-2" size={20}/>
+          Start List
+        </button>
+        <button 
+          onClick={() => setView('outfit')} 
+          className="flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-brand hover:text-brand transition-all font-body"
+        >
+          <Shirt className="mr-2" size={20}/>
+          Style Mixer
+        </button>
+      </div>
+
+      {/* Trust/Feature Icons */}
+      <div className="mt-16 pt-8 border-t border-gray-100 grid grid-cols-3 gap-8 text-gray-400">
+        <div className="flex flex-col items-center">
+          <Sun size={24} className="mb-2 text-brand opacity-60"/>
+          <span className="text-xs uppercase tracking-widest font-semibold">Seasonal</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <Anchor size={24} className="mb-2 text-brand opacity-60"/>
+          <span className="text-xs uppercase tracking-widest font-semibold">Cruise Ready</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <ShoppingBag size={24} className="mb-2 text-brand opacity-60"/>
+          <span className="text-xs uppercase tracking-widest font-semibold">Shop Amazon</span>
+        </div>
       </div>
     </div>
   </div>
@@ -471,3 +482,6 @@ export default function App() {
     </div>
   );
 }
+
+                
+   
