@@ -1,19 +1,24 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
   X, Plus, ArrowRight, Smile, User, Map, Compass, Watch, Smartphone,
   Umbrella, Coffee, Plane, Mountain, Snowflake, Utensils,
-  Star, Heart, Cloud, Music, Tent, Trees, Building, Download, Share2, Type
+  Star, Heart, Cloud, Music, Tent, Trees, Building, Download, Share2, Type,
+  Maximize2, Facebook, Mail, Twitter
 } from 'lucide-react';
 
-// --- CONFIGURATION ---
+// --- AFFILIATE CONFIGURATION ---
+// REPLACE THIS with your actual Amazon Associate Tag
+const AMAZON_TAG = 'cruisytravel-20'; 
 
+// --- CONFIGURATION ---
 const THEMES = {
   'Cruise': {
     bg: 'bg-gradient-to-br from-blue-100 via-white to-teal-50',
     accent: 'bg-teal-500',
     text: 'text-teal-900',
+    border: 'border-8 border-teal-200 border-double',
     icon: <Anchor size={20}/>,
     vibes: 'Tropical Beach'
   },
@@ -21,6 +26,7 @@ const THEMES = {
     bg: 'bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50',
     accent: 'bg-orange-400',
     text: 'text-orange-900',
+    border: 'border-[12px] border-orange-200 border-dashed',
     icon: <Sun size={20}/>,
     vibes: 'Tropical Beach'
   },
@@ -28,6 +34,7 @@ const THEMES = {
     bg: 'bg-gradient-to-b from-blue-50 to-white',
     accent: 'bg-blue-600',
     text: 'text-blue-900',
+    border: 'border-8 border-blue-100 rounded-none',
     icon: <Snowflake size={20}/>,
     vibes: 'Cold Adventure'
   },
@@ -35,6 +42,7 @@ const THEMES = {
     bg: 'bg-gradient-to-br from-gray-100 to-gray-200',
     accent: 'bg-purple-600',
     text: 'text-gray-900',
+    border: 'border-8 border-gray-800',
     icon: <Building size={20}/>,
     vibes: 'City Exploring'
   },
@@ -42,8 +50,9 @@ const THEMES = {
     bg: 'bg-gradient-to-tr from-amber-100 to-orange-100',
     accent: 'bg-amber-600',
     text: 'text-amber-900',
+    border: 'border-[10px] border-amber-300 border-dotted',
     icon: <Tent size={20}/>,
-    vibes: 'Airport Comfort' // Placeholder
+    vibes: 'Airport Comfort'
   }
 };
 
@@ -102,8 +111,6 @@ const Header = ({ view, setView, myBagCount }) => (
   <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
-        
-        {/* LOGO */}
         <div className="flex items-center cursor-pointer group" onClick={() => setView('home')}>
           <div className="bg-brand/10 p-2.5 rounded-xl mr-3 group-hover:bg-brand/20 transition-colors">
              <Compass className="text-brand" size={26} />
@@ -113,33 +120,13 @@ const Header = ({ view, setView, myBagCount }) => (
           </span>
         </div>
         
-        {/* NAV */}
         <div className="flex items-center space-x-2 md:space-x-4">
-          <button 
-            onClick={() => setView('planner')} 
-            className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'planner' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
-          >
-            Essentials
-          </button>
-          <button 
-            onClick={() => setView('styleboard')} 
-            className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'styleboard' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
-          >
-            Style Board
-          </button>
-          
-          {/* BAG BUTTON */}
-          <button 
-            onClick={() => setView('mybag')} 
-            className="flex items-center bg-gray-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-brand transition-all hover:-translate-y-0.5 active:scale-95"
-          >
+          <button onClick={() => setView('planner')} className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'planner' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Essentials</button>
+          <button onClick={() => setView('styleboard')} className={`hidden md:flex px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${view === 'styleboard' ? 'bg-gray-100 text-brand' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Style Board</button>
+          <button onClick={() => setView('mybag')} className="flex items-center bg-gray-900 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-brand transition-all hover:-translate-y-0.5 active:scale-95">
             <ShoppingBag size={18} className="mr-2" />
             <span className="hidden sm:inline">Kit</span>
-            {myBagCount > 0 && (
-               <span className="ml-2 bg-white text-gray-900 text-xs py-0.5 px-2 rounded-md font-extrabold">
-                 {myBagCount}
-               </span>
-            )}
+            {myBagCount > 0 && <span className="ml-2 bg-white text-gray-900 text-xs py-0.5 px-2 rounded-md font-extrabold">{myBagCount}</span>}
           </button>
         </div>
       </div>
@@ -148,15 +135,14 @@ const Header = ({ view, setView, myBagCount }) => (
 );
 
 const Hero = ({ setView }) => (
-  <div className="relative overflow-hidden bg-white py-24">
-    {/* Decorative Blobs */}
+  <div className="relative overflow-hidden bg-white pt-24 pb-12">
     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/4"></div>
     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-50 rounded-full blur-3xl opacity-50 translate-y-1/4 -translate-x-1/4"></div>
 
     <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
       <div className="inline-flex items-center bg-white border border-gray-100 rounded-full px-5 py-2 mb-8 shadow-sm">
          <Plane size={14} className="text-brand mr-2" />
-         <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Plan • Pack • Go</span>
+         <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Universal Packing Tool</span>
       </div>
       
       <h1 className="text-6xl md:text-8xl font-header text-gray-900 mb-8 leading-tight tracking-tight">
@@ -168,19 +154,47 @@ const Hero = ({ setView }) => (
         Build a visual packing board for your next adventure. Mix and match outfits, essentials, and travel gear in our new interactive studio.
       </p>
       
-      <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <button 
-          onClick={() => setView('styleboard')} 
-          className="flex items-center justify-center px-10 py-5 bg-brand text-white rounded-2xl font-bold text-lg shadow-xl shadow-brand/20 hover:bg-cyan-600 hover:scale-105 transition-all"
-        >
+      <div className="flex flex-col sm:flex-row justify-center gap-4 mb-20">
+        <button onClick={() => setView('styleboard')} className="flex items-center justify-center px-10 py-5 bg-brand text-white rounded-2xl font-bold text-lg shadow-xl shadow-brand/20 hover:bg-cyan-600 hover:scale-105 transition-all">
           <Camera className="mr-2" /> Create Board
         </button>
-        <button 
-          onClick={() => setView('planner')} 
-          className="flex items-center justify-center px-10 py-5 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition-all"
-        >
+        <button onClick={() => setView('planner')} className="flex items-center justify-center px-10 py-5 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition-all">
           <CheckSquare className="mr-2" /> View Essentials
         </button>
+      </div>
+
+      {/* INSPIRATION SLIDESHOW */}
+      <div className="border-t border-gray-100 pt-12">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
+        <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
+           {/* Mock Board 1 */}
+           <div className="w-48 h-64 bg-orange-50 rounded-xl border-4 border-orange-200 border-dashed p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
+              <div className="text-center mb-2"><span className="text-orange-800 font-header text-sm">Tropical</span></div>
+              <div className="grid grid-cols-2 gap-2">
+                 <div className="bg-white h-12 rounded-lg"></div>
+                 <div className="bg-white h-12 rounded-lg"></div>
+                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
+              </div>
+           </div>
+           {/* Mock Board 2 */}
+           <div className="w-48 h-64 bg-blue-50 rounded-xl border-4 border-blue-200 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
+              <div className="text-center mb-2"><span className="text-blue-800 font-header text-sm">Ski Trip</span></div>
+              <div className="grid grid-cols-2 gap-2">
+                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
+                 <div className="bg-white h-12 rounded-lg"></div>
+                 <div className="bg-white h-12 rounded-lg"></div>
+              </div>
+           </div>
+           {/* Mock Board 3 */}
+           <div className="w-48 h-64 bg-gray-100 rounded-xl border-4 border-gray-300 border-dotted p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
+              <div className="text-center mb-2"><span className="text-gray-800 font-header text-sm">City Break</span></div>
+              <div className="grid grid-cols-2 gap-2">
+                 <div className="bg-white h-12 rounded-lg"></div>
+                 <div className="bg-white h-12 rounded-lg"></div>
+                 <div className="bg-white h-20 rounded-lg col-span-2"></div>
+              </div>
+           </div>
+        </div>
       </div>
     </div>
   </div>
@@ -188,213 +202,143 @@ const Hero = ({ setView }) => (
 const StyleBoard = ({ addToBag }) => {
   const [currentTheme, setCurrentTheme] = useState('Cruise');
   const [boardItems, setBoardItems] = useState([]);
-  const [activeTab, setActiveTab] = useState('Vibes'); // Vibes, Essentials, Stickers
+  const [activeTab, setActiveTab] = useState('Vibes');
   
   const theme = THEMES[currentTheme];
   const vibeItems = TRAVEL_VIBES[theme.vibes] || TRAVEL_VIBES['Airport Comfort'];
 
-  // Add Item to Visual Board
   const addToBoard = (item, type = 'product') => {
-    const newItem = {
-      ...item,
-      boardId: Date.now(),
-      type
-    };
+    const newItem = { ...item, boardId: Date.now(), type, size: 'small' };
     setBoardItems([...boardItems, newItem]);
-    
-    // Also add to shopping bag if it's a product
-    if (type === 'product') {
-      addToBag(item);
-    }
+    if (type === 'product') addToBag(item);
   };
 
-  const removeFromBoard = (boardId) => {
-    setBoardItems(boardItems.filter(i => i.boardId !== boardId));
+  const removeFromBoard = (boardId) => setBoardItems(boardItems.filter(i => i.boardId !== boardId));
+
+  // Toggle size: Small -> Medium -> Large -> Small
+  const toggleSize = (boardId) => {
+    setBoardItems(boardItems.map(item => {
+      if (item.boardId === boardId) {
+        const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
+        return { ...item, size: nextSize };
+      }
+      return item;
+    }));
+  };
+
+  // Generic Share Handler
+  const handleShare = (platform) => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent("Check out my Cruisy Trip Kit! ✈️");
+    let shareUrl = "";
+
+    if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+    if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    if (platform === 'mail') shareUrl = `mailto:?subject=My Packing Board&body=${text} ${url}`;
+    
+    if (shareUrl) window.open(shareUrl, '_blank');
   };
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* LEFT: CREATOR TOOLS */}
-          <div className="lg:col-span-4 space-y-6">
-             
-             {/* THEME SELECTOR */}
+          {/* LEFT: TOOLS */}
+          <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <h3 className="font-header text-lg text-gray-800 mb-4">1. Choose Theme</h3>
                 <div className="grid grid-cols-2 gap-3">
                    {Object.keys(THEMES).map(t => (
-                     <button
-                       key={t}
-                       onClick={() => { setCurrentTheme(t); setBoardItems([]); }} // Clear board on theme switch? Optional.
-                       className={`flex items-center p-3 rounded-xl border-2 transition-all ${currentTheme === t ? 'border-brand bg-cyan-50 text-brand' : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
-                     >
-                       <span className="mr-2">{THEMES[t].icon}</span>
-                       <span className="text-sm font-bold">{t}</span>
+                     <button key={t} onClick={() => { setCurrentTheme(t); setBoardItems([]); }} className={`flex items-center p-3 rounded-xl border-2 transition-all ${currentTheme === t ? 'border-brand bg-cyan-50 text-brand' : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>
+                       <span className="mr-2">{THEMES[t].icon}</span><span className="text-sm font-bold">{t}</span>
                      </button>
                    ))}
                 </div>
              </div>
 
-             {/* PALETTE */}
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-[600px] flex flex-col">
                 <h3 className="font-header text-lg text-gray-800 mb-4">2. Add Items</h3>
-                
-                {/* Tabs */}
                 <div className="flex border-b border-gray-100 mb-4">
                   {['Vibes', 'Essentials', 'Stickers'].map(tab => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeTab === tab ? 'text-brand border-b-2 border-brand' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                      {tab}
-                    </button>
+                    <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 pb-3 text-sm font-bold transition-colors ${activeTab === tab ? 'text-brand border-b-2 border-brand' : 'text-gray-400 hover:text-gray-600'}`}>{tab}</button>
                   ))}
                 </div>
-
-                {/* Content Area */}
                 <div className="overflow-y-auto flex-1 pr-2 space-y-3 custom-scroll">
-                   {/* VIBES TAB */}
-                   {activeTab === 'Vibes' && vibeItems.map(item => (
+                   {/* CONTENT TABS */}
+                   {(activeTab === 'Vibes' ? vibeItems : activeTab === 'Essentials' ? ESSENTIALS_DATA : []).map(item => (
                      <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
                         <div className="bg-gray-100 p-3 rounded-lg text-gray-500 group-hover:text-brand mr-3">{item.icon}</div>
-                        <div className="flex-1">
-                          <p className="font-bold text-sm text-gray-800">{item.name}</p>
-                          <p className="text-xs text-gray-400">${item.price}</p>
-                        </div>
+                        <div className="flex-1"><p className="font-bold text-sm text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
                         <Plus size={18} className="text-gray-300 group-hover:text-brand"/>
                      </div>
                    ))}
-
-                   {/* ESSENTIALS TAB */}
-                   {activeTab === 'Essentials' && ESSENTIALS_DATA.map(item => (
-                     <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
-                        <div className="bg-gray-100 p-3 rounded-lg text-gray-500 group-hover:text-brand mr-3">{item.icon}</div>
-                        <div className="flex-1">
-                          <p className="font-bold text-sm text-gray-800">{item.name}</p>
-                          <p className="text-xs text-gray-400">${item.price}</p>
-                        </div>
-                        <Plus size={18} className="text-gray-300 group-hover:text-brand"/>
-                     </div>
-                   ))}
-
-                   {/* STICKERS TAB */}
                    {activeTab === 'Stickers' && (
                      <div className="grid grid-cols-3 gap-3">
                        {STICKERS.map(s => (
-                         <button 
-                           key={s.id} 
-                           onClick={() => addToBoard({name: s.content}, 'sticker')}
-                           className={`h-20 rounded-xl bg-gray-50 flex items-center justify-center text-3xl hover:bg-gray-100 hover:scale-105 transition-all ${s.type === 'text' ? 'text-xs font-bold uppercase tracking-widest px-2 text-center bg-black text-white' : ''}`}
-                         >
-                           {s.content}
-                         </button>
+                         <button key={s.id} onClick={() => addToBoard({name: s.content}, 'sticker')} className={`h-20 rounded-xl bg-gray-50 flex items-center justify-center text-3xl hover:bg-gray-100 hover:scale-105 transition-all ${s.type === 'text' ? 'text-xs font-bold uppercase tracking-widest px-2 text-center bg-black text-white' : ''}`}>{s.content}</button>
                        ))}
-                       <button onClick={() => addToBoard({name: 'Note'}, 'note')} className="h-20 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-brand hover:text-brand">
-                          <Type size={20} className="mb-1"/>
-                          <span className="text-xs font-bold">Add Note</span>
-                       </button>
+                       <button onClick={() => addToBoard({name: 'Note'}, 'note')} className="h-20 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-brand hover:text-brand"><Type size={20} className="mb-1"/><span className="text-xs font-bold">Note</span></button>
                      </div>
                    )}
                 </div>
              </div>
           </div>
 
-          {/* RIGHT: THE BOARD CANVAS */}
-          <div className="lg:col-span-8 flex flex-col items-center">
-             
-             {/* Canvas Container (Pinterest Ratio 2:3 approx) */}
-             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} rounded-3xl shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
-                
-                {/* Board Header */}
+          {/* RIGHT: CANVAS */}
+          <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
+             <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} rounded-3xl shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
                 <div className="text-center mb-8 z-10">
-                   <span className={`inline-block px-4 py-1 rounded-full bg-white/50 backdrop-blur-sm text-xs font-bold uppercase tracking-widest mb-2 ${theme.text} shadow-sm`}>
-                     Cruisy Trip Kit
-                   </span>
+                   <span className={`inline-block px-4 py-1 rounded-full bg-white/50 backdrop-blur-sm text-xs font-bold uppercase tracking-widest mb-2 ${theme.text} shadow-sm`}>Cruisy Trip Kit</span>
                    <h2 className={`text-4xl font-header ${theme.text} drop-shadow-sm`}>{currentTheme} Vibe</h2>
                 </div>
 
-                {/* Items Grid (Masonry-ish layout) */}
-                <div className="flex-1 grid grid-cols-3 gap-4 content-start relative z-10">
-                   {boardItems.map((item, idx) => (
-                     <div key={item.boardId} className="relative group animate-in fade-in zoom-in duration-300">
-                        {/* Remove Button */}
-                        <button 
-                          onClick={() => removeFromBoard(item.boardId)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-md"
-                        >
-                          <X size={12}/>
-                        </button>
+                <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
+                   {boardItems.map((item) => (
+                     <div 
+                        key={item.boardId} 
+                        className={`relative group animate-in fade-in zoom-in duration-300 ${
+                          item.size === 'medium' ? 'col-span-2 row-span-2' : 
+                          item.size === 'large' ? 'col-span-4' : 
+                          'col-span-1'
+                        }`}
+                     >
+                        <div className="absolute -top-2 -right-2 z-20 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                           <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
+                        </div>
 
-                        {/* Content Render */}
                         {item.type === 'product' && (
-                          <div className="bg-white p-3 rounded-2xl shadow-sm border border-white/50 flex flex-col items-center text-center transform hover:rotate-2 transition-transform">
-                             <div className={`p-3 rounded-full mb-2 ${theme.accent} text-white`}>
-                               {item.icon || <Star size={16}/>}
-                             </div>
+                          <div className={`bg-white p-3 rounded-2xl shadow-sm border border-white/50 flex flex-col items-center text-center h-full justify-center transform hover:rotate-1 transition-transform`}>
+                             <div className={`p-3 rounded-full mb-2 ${theme.accent} text-white`}>{item.icon || <Star size={16}/>}</div>
                              <span className="text-xs font-bold text-gray-700 leading-tight">{item.name}</span>
                           </div>
                         )}
-
-                        {item.type === 'sticker' && (
-                          <div className="flex justify-center items-center h-full transform hover:scale-110 transition-transform">
-                             <span className="text-5xl drop-shadow-md filter">{item.name}</span>
-                          </div>
-                        )}
-
-                        {item.type === 'note' && (
-                          <div className="bg-yellow-200 p-3 rounded-tl-xl rounded-br-xl shadow-md rotate-[-2deg] hover:rotate-0 transition-transform">
-                             <textarea 
-                               placeholder="Type note..." 
-                               className="w-full bg-transparent border-none text-xs font-handwriting text-yellow-900 focus:ring-0 resize-none h-16 placeholder-yellow-700/50"
-                             />
-                          </div>
-                        )}
+                        {item.type === 'sticker' && <div className="flex justify-center items-center h-full transform hover:scale-110 transition-transform"><span className="text-5xl drop-shadow-md filter">{item.name}</span></div>}
+                        {item.type === 'note' && <div className="bg-yellow-200 p-3 rounded-tl-xl rounded-br-xl shadow-md rotate-[-2deg] hover:rotate-0 transition-transform h-full"><textarea placeholder="Note..." className="w-full bg-transparent border-none text-xs font-handwriting text-yellow-900 focus:ring-0 resize-none h-full placeholder-yellow-700/50"/></div>}
                      </div>
                    ))}
-                   
                    {boardItems.length === 0 && (
-                     <div className="col-span-3 h-64 flex flex-col items-center justify-center text-center opacity-30">
-                        <Camera size={48} className={theme.text}/>
-                        <p className={`mt-2 font-bold ${theme.text}`}>Board Empty</p>
-                        <p className="text-xs">Add items from the left</p>
+                     <div className="col-span-4 h-64 flex flex-col items-center justify-center text-center opacity-30">
+                        <Camera size={48} className={theme.text}/><p className={`mt-2 font-bold ${theme.text}`}>Board Empty</p><p className="text-xs">Select items from the menu</p>
                      </div>
                    )}
                 </div>
+             </div>
 
-                {/* Footer */}
-                <div className="mt-auto pt-6 border-t border-black/5 flex justify-between items-end opacity-60">
-                   <div className="flex items-center">
-                      <div className={`p-1.5 rounded-full ${theme.accent} text-white mr-2`}>
-                        <Compass size={16}/>
-                      </div>
-                      <span className={`text-xs font-bold ${theme.text}`}>Generated by Cruisy Travel</span>
-                   </div>
-                   <span className="text-[10px] font-mono">cruisytravel.com</span>
+             <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <button onClick={() => setBoardItems([])} className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:bg-gray-200 transition-colors">Clear</button>
+                <button onClick={() => window.print()} className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"><Download size={18} className="mr-2"/> Save / Print PDF</button>
+                
+                {/* Social Share */}
+                <div className="flex gap-2 ml-4 border-l border-gray-200 pl-4 items-center">
+                   <span className="text-xs font-bold text-gray-400 mr-2">SHARE:</span>
+                   <button onClick={() => handleShare('facebook')} className="p-2 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform"><Facebook size={16}/></button>
+                   <button onClick={() => handleShare('twitter')} className="p-2 bg-sky-500 text-white rounded-full hover:scale-110 transition-transform"><Twitter size={16}/></button>
+                   <button onClick={() => handleShare('mail')} className="p-2 bg-gray-500 text-white rounded-full hover:scale-110 transition-transform"><Mail size={16}/></button>
                 </div>
              </div>
-
-             {/* Actions */}
-             <div className="mt-8 flex space-x-4">
-                <button 
-                  onClick={() => setBoardItems([])}
-                  className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:bg-gray-200 transition-colors"
-                >
-                  Clear Board
-                </button>
-                <button 
-                  onClick={() => window.print()}
-                  className="flex items-center px-8 py-3 rounded-xl bg-gray-900 text-white font-bold shadow-lg hover:bg-brand transition-all"
-                >
-                  <Download size={18} className="mr-2"/> Save / Print PDF
-                </button>
-             </div>
-
           </div>
-
         </div>
       </div>
     </div>
@@ -403,7 +347,6 @@ const StyleBoard = ({ addToBag }) => {
 
 const Planner = ({ addToBag }) => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
-    {/* Planner content remains mostly same but using new ESSENTIALS_DATA */}
     <div className="text-center mb-16">
       <h2 className="text-4xl font-header text-gray-900 mb-4">Essentials List</h2>
       <p className="text-lg text-gray-500">Quick-add the basics to your shopping bag.</p>
@@ -413,10 +356,7 @@ const Planner = ({ addToBag }) => (
          <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:border-brand border border-transparent transition-all">
             <div className="flex items-center">
                <div className="bg-gray-100 p-3 rounded-xl mr-4 text-gray-500 group-hover:text-brand">{item.icon}</div>
-               <div>
-                 <p className="font-bold text-gray-800">{item.name}</p>
-                 <p className="text-xs text-gray-400">${item.price}</p>
-               </div>
+               <div><p className="font-bold text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
             </div>
             <button onClick={() => addToBag(item)} className="p-2 bg-gray-50 rounded-full hover:bg-brand hover:text-white transition-all"><Plus size={18}/></button>
          </div>
@@ -479,51 +419,33 @@ export default function App() {
   const estimatedTotal = useMemo(() => myBag.reduce((acc, curr) => acc + curr.price, 0).toFixed(2), [myBag]);
 
   const handleBuy = (itemName) => {
-    window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=YOUR_TAG_HERE`, '_blank');
+    // Uses the configured affiliate tag for Search
+    window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=${AMAZON_TAG}`, '_blank');
   };
 
   return (
     <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
-      {/* Hide header on print to allow board to be printed cleanly */}
       <div className="print:hidden">
         <Header view={view} setView={setView} myBagCount={myBag.length} />
       </div>
-      
       <div className="flex-grow">
         {view === 'home' && <Hero setView={setView} />}
         {view === 'planner' && <Planner addToBag={addToBag} />}
-        {view === 'styleboard' && (
-          <StyleBoard addToBag={addToBag} />
-        )}
-        {view === 'mybag' && (
-          <MyBag 
-            myBag={myBag} setMyBag={setMyBag} removeFromBag={removeFromBag}
-            toggleCheck={toggleCheck} estimatedTotal={estimatedTotal}
-            handleBuy={handleBuy} setView={setView}
-          />
-        )}
+        {view === 'styleboard' && <StyleBoard addToBag={addToBag} />}
+        {view === 'mybag' && <MyBag myBag={myBag} setMyBag={setMyBag} removeFromBag={removeFromBag} toggleCheck={toggleCheck} estimatedTotal={estimatedTotal} handleBuy={handleBuy} setView={setView} />}
       </div>
-      
       <div className="print:hidden">
-        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">
-           &copy; 2024 Cruisy Travel.
-        </footer>
+        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2024 Cruisy Travel.</footer>
       </div>
-
-      {/* PRINT STYLES - Force background colors when printing */}
       <style>{`
         @media print {
           @page { margin: 0; size: auto; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          #print-area { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            margin: 0; border-radius: 0; z-index: 9999; 
-          }
-          /* Hide everything else */
+          #print-area { position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; z-index: 9999; }
           body > *:not(.flex-grow) { display: none; }
           .flex-grow > *:not(:has(#print-area)) { display: none; }
         }
       `}</style>
     </div>
   );
-}
+                            }
