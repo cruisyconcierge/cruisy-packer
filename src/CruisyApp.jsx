@@ -430,4 +430,3 @@ const StyleBoard = ({ addToBag, setView }) => {
     </div>
   );
 };
-
