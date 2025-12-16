@@ -1,11 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
-  Square, ExternalLink, RotateCcw, Anchor, Camera, Menu, 
-  X, Plus, ArrowRight, Smile, User, Map, Compass, Watch, Smartphone,
-  Umbrella, Coffee, Plane, Mountain, Snowflake, Utensils,
-  Star, Heart, Cloud, Music, Tent, Trees, Building, Download, Share2, Type,
-  Maximize2, Mail, Image as ImageIcon, ArrowLeft, Instagram, Pin, Shuffle
+  Square, Anchor, Camera, X, Plus, ArrowRight, User, Compass, Watch, Smartphone,
+  Umbrella, Plane, Mountain, Snowflake, Star, Tent, Building, Download, Type,
+  Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -210,7 +208,6 @@ const Hero = ({ setView }) => (
         </button>
       </div>
 
-      {/* INSPIRATION SLIDESHOW */}
       <div className="border-t border-gray-100 pt-12">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
         <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
@@ -228,6 +225,7 @@ const Hero = ({ setView }) => (
     </div>
   </div>
 );
+
 const StyleBoard = ({ addToBag, setView }) => {
   const [currentTheme, setCurrentTheme] = useState(() => safeLocalStorage.getItem('cruisyTheme_v3', 'Cruise'));
   const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v3', []));
@@ -243,15 +241,8 @@ const StyleBoard = ({ addToBag, setView }) => {
 
   const addToBoard = (item, type = 'product') => {
     const randomRotation = Math.floor(Math.random() * 6) - 3; 
-    // Stickers default to 'large' (fixed) size
     const initialSize = type === 'sticker' ? 'large' : 'small'; 
-    const newItem = { 
-      ...item, 
-      boardId: Date.now() + Math.random(), 
-      type, 
-      size: initialSize,
-      rotation: randomRotation 
-    };
+    const newItem = { ...item, boardId: Date.now() + Math.random(), type, size: initialSize, rotation: randomRotation };
     setBoardItems([...boardItems, newItem]);
     if (type === 'product') addToBag(item);
   };
@@ -260,7 +251,7 @@ const StyleBoard = ({ addToBag, setView }) => {
 
   const toggleSize = (boardId) => {
     setBoardItems(boardItems.map(item => {
-      if (item.boardId === boardId) {
+      if (item.boardId === boardId && item.type !== 'sticker') {
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
         return { ...item, size: nextSize };
       }
@@ -303,8 +294,6 @@ const StyleBoard = ({ addToBag, setView }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* LEFT: TOOLS */}
           <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <h3 className="font-header text-lg text-gray-800 mb-4">1. Choose Theme</h3>
@@ -324,7 +313,6 @@ const StyleBoard = ({ addToBag, setView }) => {
                     <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 pb-3 px-2 text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab ? 'text-brand border-b-2 border-brand' : 'text-gray-400 hover:text-gray-600'}`}>{tab}</button>
                   ))}
                 </div>
-                
                 <div className="overflow-y-auto flex-1 pr-2 space-y-3 custom-scroll">
                    {(activeTab === 'Vibes' ? vibeItems : activeTab === 'Essentials' ? ESSENTIALS_DATA : []).map(item => (
                      <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
@@ -355,7 +343,6 @@ const StyleBoard = ({ addToBag, setView }) => {
              </div>
           </div>
 
-          {/* RIGHT: CANVAS */}
           <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
              <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
                 <div className="absolute inset-0 pointer-events-none z-0">{theme.decoration}</div>
@@ -371,15 +358,11 @@ const StyleBoard = ({ addToBag, setView }) => {
                    {boardItems.map((item, index) => (
                      <div 
                         key={item.boardId} 
-                        className={`relative group animate-in fade-in zoom-in duration-300 ${
-                          item.size === 'medium' ? 'col-span-2 row-span-2' : 
-                          item.size === 'large' ? 'col-span-2 row-span-2' : 
-                          'col-span-1'
-                        }`}
+                        className={`relative group animate-in fade-in zoom-in duration-300 ${item.size === 'medium' ? 'col-span-2 row-span-2' : item.size === 'large' ? 'col-span-2 row-span-2' : 'col-span-1'}`}
                      >
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Left"><ArrowLeft size={10}/></button>
-                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100" title="Move Right"><ArrowRight size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowLeft size={10}/></button>
+                           <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowRight size={10}/></button>
                            {/* RESIZE BUTTON HIDDEN FOR STICKERS */}
                            {item.type !== 'sticker' && <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>}
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
@@ -430,97 +413,8 @@ const StyleBoard = ({ addToBag, setView }) => {
   );
 };
 
-// ... Planner, MyBag, and Main App remain similar ...
 const Planner = ({ addToBag, setView }) => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
     <div className="flex justify-between items-center mb-8">
        <button onClick={() => setView('home')} className="flex items-center text-gray-500 hover:text-brand font-bold"><ArrowLeft size={18} className="mr-2"/> Home</button>
-       <button onClick={() => setView('styleboard')} className="flex items-center bg-white text-brand border border-brand px-4 py-2 rounded-lg font-bold hover:bg-brand hover:text-white transition-all">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
-    </div>
-    <div className="text-center mb-12">
-      <h2 className="text-4xl font-header text-gray-900 mb-4">Essentials List</h2>
-      <p className="text-lg text-gray-500">Quick-add the basics to your shopping bag.</p>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-       {ESSENTIALS_DATA.map(item => (
-         <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:border-brand border border-transparent transition-all">
-            <div className="flex items-center">
-               <img src={item.img} className="w-16 h-16 rounded-lg object-cover mr-4 shadow-sm border border-gray-100" />
-               <div><p className="font-bold text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
-            </div>
-            <button onClick={() => addToBag(item)} className="p-2 bg-gray-50 rounded-full hover:bg-brand hover:text-white transition-all"><Plus size={18}/></button>
-         </div>
-       ))}
-    </div>
-  </div>
-);
-
-const MyBag = ({ myBag, setMyBag, removeFromBag, toggleCheck, estimatedTotal, handleBuy, setView }) => {
-  return (
-    <div className="max-w-3xl mx-auto px-4 py-12 min-h-screen">
-      <div className="flex justify-between items-center mb-8">
-         <button onClick={() => setView('planner')} className="flex items-center text-gray-500 hover:text-brand font-bold"><ArrowLeft size={18} className="mr-2"/> Back to Essentials</button>
-         <button onClick={() => setView('styleboard')} className="flex items-center text-brand hover:text-gray-900 font-bold">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
-      </div>
-      <div className="flex items-center justify-between mb-8">
-         <h2 className="text-3xl font-header text-gray-900">Your Trip Kit</h2>
-      </div>
-      {myBag.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-           <ShoppingBag size={64} className="mx-auto text-gray-200 mb-4"/>
-           <p className="text-gray-500">Empty Bag.</p>
-           <button onClick={() => setView('styleboard')} className="mt-4 font-bold text-brand">Create a Board</button>
-        </div>
-      ) : (
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-           <div className="p-6 bg-gray-50 flex justify-between items-center border-b border-gray-100">
-              <span className="font-bold text-gray-500 text-xs uppercase">{myBag.length} Items</span>
-              <span className="font-header text-2xl text-gray-900">${estimatedTotal}</span>
-           </div>
-           <div className="divide-y divide-gray-50">
-             {myBag.map(item => (
-               <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
-                  <div className="flex items-center">
-                     <button onClick={() => toggleCheck(item.id)} className={`mr-4 ${item.checked ? 'text-brand' : 'text-gray-300'}`}>{item.checked ? <CheckSquare size={24}/> : <Square size={24}/>}</button>
-                     {item.img && <img src={item.img} className="w-10 h-10 rounded-md object-cover mr-3" />}
-                     <span className={`font-medium ${item.checked ? 'line-through text-gray-300' : 'text-gray-800'}`}>{item.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <button onClick={() => handleBuy(item.name)} className="px-3 py-1.5 bg-brand text-white text-xs font-bold rounded-lg hover:bg-cyan-600">Amazon</button>
-                     <button onClick={() => removeFromBag(item.id)} className="p-2 text-gray-300 hover:text-red-500"><Trash2 size={18}/></button>
-                  </div>
-               </div>
-             ))}
-           </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- MAIN APP COMPONENT ---
-export default function App() {
-  const [view, setView] = useState('home'); 
-  const [myBag, setMyBag] = useState([]);
-
-  const addToBag = (item) => {
-    const bagItem = { ...item, id: item.id + '_' + Date.now(), checked: false };
-    setMyBag([...myBag, bagItem]);
-  };
-
-  const removeFromBag = (id) => setMyBag(myBag.filter(i => i.id !== id));
-  const toggleCheck = (id) => setMyBag(myBag.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
-  const estimatedTotal = useMemo(() => myBag.reduce((acc, curr) => acc + curr.price, 0).toFixed(2), [myBag]);
-
-  const handleBuy = (itemName) => {
-    window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=${AMAZON_TAG}`, '_blank');
-  };
-
-  return (
-    <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
-      <div className="print:hidden">
-        <Header view={view} setView={setView} myBagCount={myBag.length} />
-      </div>
-      <div className="flex-grow">
-        {view === 'home' && <Hero setView={setView} />}
-        {view === 'planner' && <Planner addToBag={addToBag} s
+       <button onClick={() => setView('styleboard')} className="flex items-center bg-white text-brand border border-brand px-4 py-2 rounded-lg font-bold hover:bg-brand hover:text-white transition-all">G
