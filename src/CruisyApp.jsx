@@ -219,22 +219,32 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag }) => {
-  // Load from local storage or default
-  const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem('cruisyTheme') || 'Cruise');
-  const [boardItems, setBoardItems] = useState(() => JSON.parse(localStorage.getItem('cruisyBoardItems') || '[]'));
+  // SAFETY CHECK: Load theme safely. If invalid, default to 'Cruise'
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const saved = localStorage.getItem('cruisyTheme');
+    return THEMES[saved] ? saved : 'Cruise';
+  });
+
+  // SAFETY CHECK: Load items safely. If corrupt, default to empty array
+  const [boardItems, setBoardItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('cruisyBoardItems') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
   const [activeTab, setActiveTab] = useState('Vibes');
   
-  // Save to local storage whenever state changes
   useEffect(() => {
     localStorage.setItem('cruisyTheme', currentTheme);
     localStorage.setItem('cruisyBoardItems', JSON.stringify(boardItems));
   }, [currentTheme, boardItems]);
 
-  const theme = THEMES[currentTheme];
+  const theme = THEMES[currentTheme] || THEMES['Cruise'];
   const vibeItems = TRAVEL_VIBES[theme.vibes] || TRAVEL_VIBES['Airport Comfort'];
 
   const addToBoard = (item, type = 'product') => {
-    // Generate pre-set sizes for stickers to avoid manual resize errors if desired
     const initialSize = type === 'sticker' ? 'medium' : 'small';
     const newItem = { ...item, boardId: Date.now() + Math.random(), type, size: initialSize };
     setBoardItems([...boardItems, newItem]);
@@ -372,7 +382,7 @@ const StyleBoard = ({ addToBag }) => {
                         {item.type === 'sticker' && <div className="flex justify-center items-center h-full transform hover:scale-110 transition-transform"><span className="text-5xl drop-shadow-md filter">{item.name}</span></div>}
                         {item.type === 'note' && (
                           <div className="bg-white p-4 shadow-lg h-full relative" style={{background: 'linear-gradient(to bottom, #fff 0%, #fff 100%), linear-gradient(to bottom, #dbeafe 1px, transparent 1px)', backgroundSize: '100% 24px'}}>
-                             <div className="absolute top-2 right-2 opacity-20"><Compass size={24} className="text-brand"/></div>
+                             <div className="absolute top-2 right-2 opacity-40"><Compass size={16} className="text-brand"/></div>
                              <textarea 
                                placeholder="Write here..." 
                                className="w-full h-full bg-transparent border-none text-sm text-gray-700 focus:ring-0 resize-none leading-[24px]"
