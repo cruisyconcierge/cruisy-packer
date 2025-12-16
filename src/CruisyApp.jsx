@@ -6,7 +6,7 @@ import {
   Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook
 } from 'lucide-react';
 
-// --- CONFIGURATION ---
+// --- AFFILIATE CONFIGURATION ---
 const AMAZON_TAG = 'cruisytravel-20'; 
 const BRAND_LOGO = "https://cruisytravel.com/wp-content/uploads/2024/01/cropped-20240120_025955_0000.png";
 
@@ -22,6 +22,7 @@ const safeLocalStorage = {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 };
+// --- CONFIGURATION ---
 const THEMES = {
   'Cruise': {
     bg: 'bg-blue-50',
@@ -147,6 +148,8 @@ const ESSENTIALS_DATA = [
   { id: 'e6', name: 'Sunscreen', price: 14.50, img: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=300&q=80' },
   { id: 'e7', name: 'First Aid Kit', price: 15.00, img: 'https://images.unsplash.com/photo-1632613713312-0440375dc113?w=300&q=80' },
 ];
+// --- COMPONENTS ---
+
 const Header = ({ view, setView, myBagCount }) => (
   <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -208,13 +211,18 @@ const Hero = ({ setView }) => (
   </div>
 );
 const StyleBoard = ({ addToBag, setView }) => {
-  const [currentTheme, setCurrentTheme] = useState(() => safeLocalStorage.getItem('cruisyTheme_v4', 'Cruise'));
-  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v4', []));
+  // Use keys _v5 to force reset and fix white screen
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const saved = safeLocalStorage.getItem('cruisyTheme_v5', 'Cruise');
+    return THEMES[saved] ? saved : 'Cruise'; // Safety check
+  });
+  
+  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v5', []));
   const [activeTab, setActiveTab] = useState('Vibes');
   
   useEffect(() => {
-    safeLocalStorage.setItem('cruisyTheme_v4', currentTheme);
-    safeLocalStorage.setItem('cruisyBoardItems_v4', boardItems);
+    safeLocalStorage.setItem('cruisyTheme_v5', currentTheme);
+    safeLocalStorage.setItem('cruisyBoardItems_v5', boardItems);
   }, [currentTheme, boardItems]);
 
   const theme = THEMES[currentTheme] || THEMES['Cruise'];
@@ -232,6 +240,7 @@ const StyleBoard = ({ addToBag, setView }) => {
 
   const toggleSize = (boardId) => {
     setBoardItems(boardItems.map(item => {
+      // Prevents resizing for stickers
       if (item.boardId === boardId && item.type !== 'sticker') {
         const nextSize = item.size === 'small' ? 'medium' : item.size === 'medium' ? 'large' : 'small';
         return { ...item, size: nextSize };
@@ -275,6 +284,7 @@ const StyleBoard = ({ addToBag, setView }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
           <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <h3 className="font-header text-lg text-gray-800 mb-4">1. Choose Theme</h3>
@@ -294,6 +304,7 @@ const StyleBoard = ({ addToBag, setView }) => {
                     <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 pb-3 px-2 text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-400 hover:text-gray-600'}`}>{tab}</button>
                   ))}
                 </div>
+                
                 <div className="overflow-y-auto flex-1 pr-2 space-y-3 custom-scroll">
                    {(activeTab === 'Vibes' ? vibeItems : activeTab === 'Essentials' ? ESSENTIALS_DATA : []).map(item => (
                      <div key={item.id} onClick={() => addToBoard(item, 'product')} className="flex items-center p-2 rounded-xl hover:bg-gray-50 cursor-pointer group border border-transparent hover:border-gray-100 transition-all">
@@ -327,10 +338,12 @@ const StyleBoard = ({ addToBag, setView }) => {
           <div className="lg:col-span-8 flex flex-col items-center order-1 lg:order-2">
              <div id="print-area" className={`w-full max-w-[600px] aspect-[3/4] ${theme.bg} ${theme.border} shadow-2xl relative overflow-hidden transition-all duration-500 p-8 flex flex-col`}>
                 <div className="absolute inset-0 pointer-events-none z-0">{theme.decoration}</div>
+                
                 <div className="text-center mb-8 z-10 relative flex flex-col items-center">
                    <img src={BRAND_LOGO} alt="Cruisy Travel" className="h-12 w-auto mb-2 opacity-90 mix-blend-multiply" />
                    <h2 className={`text-3xl font-header ${theme.text} drop-shadow-sm leading-tight`}>My Cruisy Travel Getaway</h2>
                 </div>
+
                 <div className="flex-1 grid grid-cols-4 gap-4 content-start relative z-10 auto-rows-min">
                    {boardItems.map((item, index) => (
                      <div 
@@ -340,16 +353,20 @@ const StyleBoard = ({ addToBag, setView }) => {
                         <div className="absolute -top-2 -right-2 z-30 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'left');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowLeft size={10}/></button>
                            <button onClick={(e) => {e.stopPropagation(); moveItem(index, 'right');}} className="bg-white text-gray-600 rounded-full p-1 shadow-md hover:bg-gray-100"><ArrowRight size={10}/></button>
+                           {/* HIDDEN RESIZE FOR STICKERS */}
                            {item.type !== 'sticker' && <button onClick={(e) => {e.stopPropagation(); toggleSize(item.boardId);}} className="bg-gray-800 text-white rounded-full p-1 shadow-md"><Maximize2 size={10}/></button>}
                            <button onClick={(e) => {e.stopPropagation(); removeFromBoard(item.boardId);}} className="bg-red-500 text-white rounded-full p-1 shadow-md"><X size={10}/></button>
                         </div>
+
                         {(item.type === 'product' || item.type === 'photo') && (
                           <div className={`relative w-full h-full bg-white p-2 shadow-md transform transition-transform overflow-hidden ${item.type === 'product' ? 'rounded-none' : 'rounded-none'}`} style={{transform: `rotate(${item.rotation}deg)`}}>
                              <img src={item.img} alt={item.name} className="w-full h-full object-cover border border-gray-100" />
                              {item.type === 'product' && <div className="absolute bottom-0 left-0 right-0 bg-white/90 p-1 text-[10px] font-bold text-center truncate">{item.name}</div>}
                           </div>
                         )}
+                        
                         {item.type === 'sticker' && <div className="flex justify-center items-center h-full w-full" style={{transform: `rotate(${item.rotation}deg)`}}><span className="text-6xl drop-shadow-md filter">{item.name}</span></div>}
+                        
                         {item.type === 'note' && (
                           <div className="bg-white p-4 shadow-lg h-full relative" style={{transform: `rotate(${item.rotation}deg)`, background: 'linear-gradient(to bottom, #fff 0%, #fff 100%), linear-gradient(to bottom, #dbeafe 1px, transparent 1px)', backgroundSize: '100% 24px'}}>
                              <div className="absolute top-2 right-2 opacity-40"><Compass size={16} className="text-brand"/></div>
@@ -361,6 +378,7 @@ const StyleBoard = ({ addToBag, setView }) => {
                    {boardItems.length === 0 && <div className="col-span-4 h-64 flex flex-col items-center justify-center text-center opacity-30"><Camera size={48} className={theme.text}/><p className={`mt-2 font-bold ${theme.text}`}>Start Creating</p><p className="text-xs">Add items from the menu</p></div>}
                 </div>
              </div>
+
              <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button onClick={shuffleLayout} className="flex items-center px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-colors shadow-sm"><Shuffle size={18} className="mr-2"/> Shuffle Layout</button>
                 <button onClick={() => setBoardItems([])} className="px-6 py-3 rounded-xl text-gray-500 font-bold hover:text-red-500 transition-colors">Clear</button>
