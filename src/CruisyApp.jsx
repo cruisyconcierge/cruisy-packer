@@ -3,7 +3,8 @@ import {
   Luggage, Sun, Shirt, ShoppingBag, Trash2, CheckSquare, 
   Square, Anchor, Camera, X, Plus, ArrowRight, Compass, Watch, Smartphone,
   Umbrella, Plane, Mountain, Snowflake, Building, Type,
-  Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook, Map as MapIcon
+  Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook, Map as MapIcon,
+  Download, Tent // <--- Added these missing imports
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -15,7 +16,6 @@ const safeLocalStorage = {
   getItem: (key, fallback) => {
     try {
       const item = localStorage.getItem(key);
-      // Extra safety: Check if parsed item is actually valid
       const parsed = item ? JSON.parse(item) : fallback;
       return parsed !== null && parsed !== undefined ? parsed : fallback;
     } catch (e) { return fallback; }
@@ -24,6 +24,7 @@ const safeLocalStorage = {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 };
+
 // --- CONFIGURATION ---
 const THEMES = {
   'Cruise': {
@@ -36,7 +37,8 @@ const THEMES = {
         <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-teal-100/40 to-transparent pointer-events-none"></div>
       </>
     ),
-    vibes: 'Tropical Beach'
+    vibes: 'Tropical Beach',
+    icon: <Anchor size={20}/>
   },
   'Tropical': {
     bg: 'bg-orange-50',
@@ -48,7 +50,8 @@ const THEMES = {
         <div className="absolute bottom-4 right-4 text-orange-400/20 pointer-events-none"><Umbrella size={100} /></div>
       </>
     ),
-    vibes: 'Tropical Beach'
+    vibes: 'Tropical Beach',
+    icon: <Sun size={20}/>
   },
   'Ski Trip': {
     bg: 'bg-slate-50',
@@ -60,7 +63,8 @@ const THEMES = {
         <div className="absolute bottom-8 right-8 text-blue-300/30 pointer-events-none"><Snowflake size={120} /></div>
       </>
     ),
-    vibes: 'Cold Adventure'
+    vibes: 'Cold Adventure',
+    icon: <Snowflake size={20}/>
   },
   'City Break': {
     bg: 'bg-zinc-100',
@@ -72,7 +76,8 @@ const THEMES = {
         <div className="absolute top-4 right-4 text-zinc-300 pointer-events-none"><Building size={100} /></div>
       </>
     ),
-    vibes: 'City Exploring'
+    vibes: 'City Exploring',
+    icon: <Building size={20}/>
   },
   'Desert': {
     bg: 'bg-amber-50',
@@ -84,9 +89,11 @@ const THEMES = {
         <div className="absolute bottom-4 left-4 text-amber-300/40 pointer-events-none"><Sun size={80} /></div>
       </>
     ),
-    vibes: 'Airport Comfort'
+    vibes: 'Airport Comfort',
+    icon: <Tent size={20}/>
   }
 };
+
 const STICKERS = [
   { id: 's1', content: '✈️', type: 'emoji' },
   { id: 's2', content: '🌴', type: 'emoji' },
@@ -150,6 +157,7 @@ const ESSENTIALS_DATA = [
   { id: 'e6', name: 'Sunscreen', price: 14.50, img: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=300&q=80' },
   { id: 'e7', name: 'First Aid Kit', price: 15.00, img: 'https://images.unsplash.com/photo-1632613713312-0440375dc113?w=300&q=80' },
 ];
+
 // --- COMPONENTS ---
 
 const Header = ({ view, setView, myBagCount }) => (
@@ -222,21 +230,26 @@ const Hero = ({ setView }) => (
     </div>
   </div>
 );
+
 const StyleBoard = ({ addToBag, setView }) => {
-  // SAFETY CHECK: Use new keys (_v6) to completely reset storage logic
-  const [currentTheme, setCurrentTheme] = useState(() => safeLocalStorage.getItem('cruisyTheme_v6', 'Cruise'));
-  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v6', []));
+  // SAFETY CHECK: Use new keys (_v9) to force fresh start
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const saved = safeLocalStorage.getItem('cruisyTheme_v9', 'Cruise');
+    return THEMES[saved] ? saved : 'Cruise'; // Safety check
+  });
+  
+  const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v9', []));
   const [activeTab, setActiveTab] = useState('Vibes');
   
   useEffect(() => {
-    safeLocalStorage.setItem('cruisyTheme_v6', currentTheme);
-    safeLocalStorage.setItem('cruisyBoardItems_v6', boardItems);
+    safeLocalStorage.setItem('cruisyTheme_v9', currentTheme);
+    safeLocalStorage.setItem('cruisyBoardItems_v9', boardItems);
   }, [currentTheme, boardItems]);
 
   const theme = THEMES[currentTheme] || THEMES['Cruise'];
   const vibeItems = TRAVEL_VIBES[theme.vibes] || TRAVEL_VIBES['Airport Comfort'];
   
-  // Ensure boardItems is always an array to prevent crash
+  // Ensure boardItems is always an array
   const validBoardItems = Array.isArray(boardItems) ? boardItems : [];
 
   const addToBoard = (item, type = 'product') => {
@@ -430,3 +443,115 @@ const StyleBoard = ({ addToBag, setView }) => {
     </div>
   );
 };
+
+// ... Planner, MyBag, and Main App ...
+const Planner = ({ addToBag, setView }) => (
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+    <div className="flex justify-between items-center mb-8">
+       <button onClick={() => setView('home')} className="flex items-center text-gray-500 hover:text-teal-600 font-bold"><ArrowLeft size={18} className="mr-2"/> Home</button>
+       <button onClick={() => setView('styleboard')} className="flex items-center bg-white text-teal-600 border border-teal-600 px-4 py-2 rounded-lg font-bold hover:bg-teal-600 hover:text-white transition-all">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
+    </div>
+    <div className="text-center mb-12">
+      <h2 className="text-4xl font-header text-gray-900 mb-4">Essentials List</h2>
+      <p className="text-lg text-gray-500">Quick-add the basics to your shopping bag.</p>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+       {ESSENTIALS_DATA.map(item => (
+         <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center justify-between group hover:border-teal-500 border border-transparent transition-all">
+            <div className="flex items-center">
+               <img src={item.img} className="w-16 h-16 rounded-lg object-cover mr-4 shadow-sm border border-gray-100" />
+               <div><p className="font-bold text-gray-800">{item.name}</p><p className="text-xs text-gray-400">${item.price}</p></div>
+            </div>
+            <button onClick={() => addToBag(item)} className="p-2 bg-gray-50 rounded-full hover:bg-teal-600 hover:text-white transition-all"><Plus size={18}/></button>
+         </div>
+       ))}
+    </div>
+  </div>
+);
+
+const MyBag = ({ myBag, setMyBag, removeFromBag, toggleCheck, estimatedTotal, handleBuy, setView }) => {
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-12 min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+         <button onClick={() => setView('planner')} className="flex items-center text-gray-500 hover:text-teal-600 font-bold"><ArrowLeft size={18} className="mr-2"/> Back to Essentials</button>
+         <button onClick={() => setView('styleboard')} className="flex items-center text-teal-600 hover:text-gray-900 font-bold">Go to Style Board <ArrowRight size={18} className="ml-2"/></button>
+      </div>
+      <div className="flex items-center justify-between mb-8">
+         <h2 className="text-3xl font-header text-gray-900">Your Trip Kit</h2>
+      </div>
+      {myBag.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+           <ShoppingBag size={64} className="mx-auto text-gray-200 mb-4"/>
+           <p className="text-gray-500">Empty Bag.</p>
+           <button onClick={() => setView('styleboard')} className="mt-4 font-bold text-teal-600">Create a Board</button>
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+           <div className="p-6 bg-gray-50 flex justify-between items-center border-b border-gray-100">
+              <span className="font-bold text-gray-500 text-xs uppercase">{myBag.length} Items</span>
+              <span className="font-header text-2xl text-gray-900">${estimatedTotal}</span>
+           </div>
+           <div className="divide-y divide-gray-50">
+             {myBag.map(item => (
+               <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                  <div className="flex items-center">
+                     <button onClick={() => toggleCheck(item.id)} className={`mr-4 ${item.checked ? 'text-teal-600' : 'text-gray-300'}`}>{item.checked ? <CheckSquare size={24}/> : <Square size={24}/>}</button>
+                     {item.img && <img src={item.img} className="w-10 h-10 rounded-md object-cover mr-3" />}
+                     <span className={`font-medium ${item.checked ? 'line-through text-gray-300' : 'text-gray-800'}`}>{item.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <button onClick={() => handleBuy(item.name)} className="px-3 py-1.5 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-cyan-600">Amazon</button>
+                     <button onClick={() => removeFromBag(item.id)} className="p-2 text-gray-300 hover:text-red-500"><Trash2 size={18}/></button>
+                  </div>
+               </div>
+             ))}
+           </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default function App() {
+  const [view, setView] = useState('home'); 
+  const [myBag, setMyBag] = useState([]);
+
+  const addToBag = (item) => {
+    const bagItem = { ...item, id: item.id + '_' + Date.now(), checked: false };
+    setMyBag([...myBag, bagItem]);
+  };
+
+  const removeFromBag = (id) => setMyBag(myBag.filter(i => i.id !== id));
+  const toggleCheck = (id) => setMyBag(myBag.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
+  const estimatedTotal = useMemo(() => myBag.reduce((acc, curr) => acc + curr.price, 0).toFixed(2), [myBag]);
+
+  const handleBuy = (itemName) => {
+    window.open(`https://www.amazon.com/s?k=${encodeURIComponent(itemName)}&tag=${AMAZON_TAG}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-white font-body text-gray-800 flex flex-col">
+      <div className="print:hidden">
+        <Header view={view} setView={setView} myBagCount={myBag.length} />
+      </div>
+      <div className="flex-grow">
+        {view === 'home' && <Hero setView={setView} />}
+        {view === 'planner' && <Planner addToBag={addToBag} setView={setView} />}
+        {view === 'styleboard' && <StyleBoard addToBag={addToBag} setView={setView} />}
+        {view === 'mybag' && <MyBag myBag={myBag} setMyBag={setMyBag} removeFromBag={removeFromBag} toggleCheck={toggleCheck} estimatedTotal={estimatedTotal} handleBuy={handleBuy} setView={setView} />}
+      </div>
+      <div className="print:hidden">
+        <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2025-2026 Cruisy Travel.</footer>
+      </div>
+      <style>{`
+        @media print {
+          @page { margin: 0; size: auto; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          #print-area { position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; z-index: 9999; }
+          body > *:not(.flex-grow) { display: none; }
+          .flex-grow > *:not(:has(#print-area)) { display: none; }
+        }
+      `}</style>
+    </div>
+  );
+    }
