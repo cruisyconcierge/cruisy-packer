@@ -4,7 +4,7 @@ import {
   Square, Anchor, Camera, X, Plus, ArrowRight, Compass, Watch, Smartphone,
   Umbrella, Plane, Mountain, Snowflake, Building, Type,
   Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook, Map as MapIcon,
-  Download, Tent // <--- Added these missing imports
+  Download, Tent
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -112,6 +112,7 @@ const STICKERS = [
   { id: 't3', content: 'Out of Office', type: 'text' },
 ];
 
+// --- ADD YOUR OWN PHOTOS HERE ---
 const SCENIC_PHOTOS = [
   { id: 'p1', url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80', name: 'Swiss Alps' },
   { id: 'p2', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80', name: 'Tropical Beach' },
@@ -121,6 +122,10 @@ const SCENIC_PHOTOS = [
   { id: 'p6', url: 'https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=400&q=80', name: 'Cozy Cabin' },
   { id: 'p7', url: 'https://images.unsplash.com/photo-1512951670161-b3c66e49872d?w=400&q=80', name: 'Poolside' },
   { id: 'p8', url: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=400&q=80', name: 'Beach Walk' },
+  // Newly Added Photos:
+  { id: 'p9', url: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=400&q=80', name: 'Cruise Ship' },
+  { id: 'p10', url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80', name: 'Paris Street' },
+  { id: 'p11', url: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80', name: 'Airplane Wing' },
 ];
 
 const TRAVEL_VIBES = {
@@ -233,11 +238,7 @@ const Hero = ({ setView }) => (
 
 const StyleBoard = ({ addToBag, setView }) => {
   // SAFETY CHECK: Use new keys (_v9) to force fresh start
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    const saved = safeLocalStorage.getItem('cruisyTheme_v9', 'Cruise');
-    return THEMES[saved] ? saved : 'Cruise'; // Safety check
-  });
-  
+  const [currentTheme, setCurrentTheme] = useState(() => safeLocalStorage.getItem('cruisyTheme_v9', 'Cruise'));
   const [boardItems, setBoardItems] = useState(() => safeLocalStorage.getItem('cruisyBoardItems_v9', []));
   const [activeTab, setActiveTab] = useState('Vibes');
   
@@ -554,4 +555,4 @@ export default function App() {
       `}</style>
     </div>
   );
-    }
+}
