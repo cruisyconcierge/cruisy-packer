@@ -238,14 +238,14 @@ const Hero = ({ setView }) => (
 
       <div className="border-t border-gray-100 pt-12">
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
-        <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
-           <div className="w-48 h-64 bg-orange-50 rounded-xl border-4 border-orange-100 p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
+        <div className="flex justify-center gap-4 md:gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity flex-wrap sm:flex-nowrap">
+           <div className="w-32 h-44 sm:w-48 sm:h-64 bg-orange-50 rounded-xl border-4 border-orange-100 p-2 sm:p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
-           <div className="w-48 h-64 bg-blue-50 rounded-xl border-4 border-blue-100 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
+           <div className="w-32 h-44 sm:w-48 sm:h-64 bg-blue-50 rounded-xl border-4 border-blue-100 p-2 sm:p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
-           <div className="w-48 h-64 bg-gray-100 rounded-xl border-4 border-gray-200 p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
+           <div className="w-32 h-44 sm:w-48 sm:h-64 bg-gray-100 rounded-xl border-4 border-gray-200 p-2 sm:p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
         </div>
