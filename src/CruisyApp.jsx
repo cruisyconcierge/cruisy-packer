@@ -317,10 +317,15 @@ const StyleBoard = ({ addToBag, setView }) => {
   const handleShare = (platform) => {
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent("My Cruisy Travel Getaway ✈️");
-    if (platform === 'pinterest') window.open(`https://pinterest.com/pin/create/button/?url=${url}&description=${text}`, '_blank');
+    
+    // Explanation for media-based platforms
+    if (platform === 'pinterest' || platform === 'instagram') {
+      alert(`To share your custom Board on ${platform === 'pinterest' ? 'Pinterest' : 'Instagram'}:\n\n1. Click "Save / Print PDF" to save an image of your board.\n2. Upload that image directly to ${platform === 'pinterest' ? 'Pinterest' : 'Instagram'}.\n\n(Direct sharing of generated images requires a backend server)`);
+      return;
+    }
+
     if (platform === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
     if (platform === 'mail') window.open(`mailto:?subject=My Cruisy Travel Getaway&body=${text} ${url}`, '_blank');
-    if (platform === 'instagram') alert("To share on Instagram: \n1. Click 'Save / Print PDF' \n2. Save the image to your phone \n3. Post to Instagram!");
   };
 
   return (
@@ -572,11 +577,39 @@ export default function App() {
         .font-russo { font-family: 'Russo One', sans-serif; }
         
         @media print {
+          /* Reset page styles */
           @page { margin: 0; size: auto; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          #print-area { position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; z-index: 9999; }
-          body > *:not(.flex-grow) { display: none; }
-          .flex-grow > *:not(:has(#print-area)) { display: none; }
+          body, html {
+            height: auto;
+            overflow: visible;
+          }
+          
+          /* Hide everything by default */
+          body * {
+            visibility: hidden;
+          }
+          
+          /* Only show the print area and its children */
+          #print-area, #print-area * {
+            visibility: visible;
+          }
+          
+          /* Position the print area at the absolute top-left */
+          #print-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            margin: 0;
+            padding: 20px;
+            z-index: 9999;
+            background: white !important;
+            
+            /* Ensure colors and images print */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
         }
       `}</style>
     </div>
