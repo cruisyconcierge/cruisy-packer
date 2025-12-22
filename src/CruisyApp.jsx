@@ -535,6 +535,11 @@ export default function App() {
   const [view, setView] = useState('home'); 
   const [myBag, setMyBag] = useState([]);
 
+  // Set the document title to update browser tab
+  useEffect(() => {
+    document.title = "Cruisy Trip Styler";
+  }, []);
+
   const addToBag = (item) => {
     const bagItem = { ...item, id: item.id + '_' + Date.now(), checked: false };
     setMyBag([...myBag, bagItem]);
