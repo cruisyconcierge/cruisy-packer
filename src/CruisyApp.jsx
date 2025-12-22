@@ -4,7 +4,7 @@ import {
   Square, Anchor, Camera, X, Plus, ArrowRight, Compass, Watch, Smartphone,
   Umbrella, Plane, Mountain, Snowflake, Building, Type,
   Maximize2, Mail, ArrowLeft, Instagram, Pin, Shuffle, Facebook, Map as MapIcon,
-  Download, Tent
+  Download, Tent, Menu, Home, ChevronRight
 } from 'lucide-react';
 
 // --- AFFILIATE CONFIGURATION ---
@@ -121,7 +121,6 @@ const SCENIC_PHOTOS = [
   { id: 'p6', url: 'https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=400&q=80', name: 'Cozy Cabin' },
   { id: 'p7', url: 'https://images.unsplash.com/photo-1512951670161-b3c66e49872d?w=400&q=80', name: 'Poolside' },
   { id: 'p8', url: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=400&q=80', name: 'Beach Walk' },
-  // Newly Added Photos:
   { id: 'p9', url: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=400&q=80', name: 'Cruise Ship' },
   { id: 'p10', url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80', name: 'Paris Street' },
   { id: 'p11', url: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80', name: 'Airplane Wing' },
@@ -164,14 +163,34 @@ const ESSENTIALS_DATA = [
 
 // --- COMPONENTS ---
 
+// Updated Header with Russo One Font and Brand Styling
 const Header = ({ view, setView, myBagCount }) => (
-  <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
+  <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all">
+    {/* Breadcrumbs Top Bar */}
+    <div className="bg-slate-50 border-b border-slate-100 py-2 px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center text-xs font-medium text-slate-500">
+        <a href="https://cruisytravel.com" className="hover:text-teal-600 transition-colors flex items-center">
+          <Home size={12} className="mr-1" />
+          Cruisy Travel Main
+        </a>
+        <ChevronRight size={12} className="mx-2 text-slate-300" />
+        <span className="text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded-full">Trip Styler Tool</span>
+      </div>
+    </div>
+
+    {/* Main Navbar */}
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
         
         <div className="flex items-center cursor-pointer group" onClick={() => setView('home')}>
-          <img src={BRAND_LOGO} alt="Cruisy Travel" className="h-10 w-auto mr-2" />
-          <span className="sr-only">Cruisy Travel Trip Kit</span>
+          {/* Logo with Custom Blue Circle Border */}
+          <div className="h-12 w-12 rounded-full border-2 border-[#34a4b8] flex items-center justify-center p-0.5 mr-3 bg-white shadow-sm transition-all group-hover:shadow-md overflow-hidden">
+             <img src={BRAND_LOGO} alt="Cruisy Travel" className="w-full h-full object-cover" />
+          </div>
+          {/* Brand Name Text - Russo One Font & Custom Color */}
+          <span className="font-russo text-2xl md:text-3xl text-slate-700 tracking-wide uppercase">
+            CRUISY <span style={{ color: '#34a4b8' }}>TRAVEL</span>
+          </span>
         </div>
         
         <div className="flex items-center space-x-2 md:space-x-4">
@@ -185,7 +204,7 @@ const Header = ({ view, setView, myBagCount }) => (
         </div>
       </div>
     </div>
-  </nav>
+  </div>
 );
 
 const Hero = ({ setView }) => (
@@ -221,13 +240,13 @@ const Hero = ({ setView }) => (
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Inspiration Boards</p>
         <div className="flex justify-center gap-6 overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
            <div className="w-48 h-64 bg-orange-50 rounded-xl border-4 border-orange-100 p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500 shadow-md">
-              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
+             <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
            <div className="w-48 h-64 bg-blue-50 rounded-xl border-4 border-blue-100 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500 shadow-md z-10">
-              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
+             <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
            <div className="w-48 h-64 bg-gray-100 rounded-xl border-4 border-gray-200 p-4 transform -rotate-1 hover:rotate-0 transition-transform duration-500 shadow-md">
-              <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
+             <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=300')] bg-cover rounded-lg opacity-80"></div>
            </div>
         </div>
       </div>
@@ -544,6 +563,9 @@ export default function App() {
         <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-400 text-sm">&copy; 2025-2026 Cruisy Travel.</footer>
       </div>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+        .font-russo { font-family: 'Russo One', sans-serif; }
+        
         @media print {
           @page { margin: 0; size: auto; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
